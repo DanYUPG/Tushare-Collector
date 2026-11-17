@@ -311,7 +311,7 @@ class CollectorTests(CollectorFixture):
         self.assertFalse(meta["is_derived"])
         self.assertEqual(meta["coverage"], "not_proven")
         self.assertEqual(meta["params"], calls[0][1])
-        self.assertIn("/tushare/stocks/market/daily/", str(path))
+        self.assertIn("/tushare/stocks/market/daily/", path.as_posix())
         for file in self.root.rglob("*"):
             if file.is_file():
                 self.assertNotIn(TOKEN.encode(), file.read_bytes())
@@ -419,7 +419,7 @@ class CollectorTests(CollectorFixture):
         self.assertEqual(len(calls), 1)
         self.assertEqual(final["slices"][0]["raw_path"], str(raw_path))
         self.assertEqual(hashlib.sha256(raw_path.read_bytes()).hexdigest(), evidence["raw_sha256"])
-        self.assertTrue(final["slices"][1]["raw_path"].endswith("/data.parquet"))
+        self.assertEqual(Path(final["slices"][1]["raw_path"]).name, "data.parquet")
 
     def test_permission_error_no_retry_and_retains_response(self):
         run, calls = self.run_config(self.config(), [response(code=2002, message="权限不足")])
