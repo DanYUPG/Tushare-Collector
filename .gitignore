@@ -1,0 +1,49 @@
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Development caches and coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Frontend dependencies and caches
+node_modules/
+.vite/
+*.tsbuildinfo
+
+# Local data, exports, and SQLite runtime files
+/data/
+/raw/
+/exports/
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+
+# Local credentials; keep credential-free environment templates
+.env
+.env.*
+!.env.example
+!.env.template
+/token
+/token.*
+.tushare-token
+.tushare-token.*
+
+# Logs and operating system files
+*.log
+.DS_Store
+._*
+Thumbs.db

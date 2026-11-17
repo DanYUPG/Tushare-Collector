@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tushare 数据采集台 · 三套前端视觉原型对比</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #111827;
+      color: #f9fafb;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .switcher-bar {
+      height: 54px;
+      background: #0b0f19;
+      border-bottom: 1px solid #1f2937;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+    .title {
+      font-size: 13.5px;
+      font-weight: 650;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #1f2937;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: #161e2e;
+      padding: 4px;
+      border-radius: 9px;
+      border: 1px solid #283548;
+    }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-weight: 550;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: #fff; }
+    .tab-btn.active {
+      background: #0d9488;
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .right-tools { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    .note { color: #9ca3af; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .open-link {
+      color: #5eead4;
+      text-decoration: none;
+      padding: 5px 10px;
+      border: 1px solid rgba(94,234,212,0.3);
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .open-link:hover { background: rgba(94,234,212,0.1); }
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header class="switcher-bar">
+    <div class="title">
+      <span>前端设计原型预览台</span>
+      <span class="tag">可点击交互演示</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-src="./style-a-workbench.html" data-note="对齐仓库 asset_system：深蓝侧栏 + KPI 总览 + 卡片/表格切换 + 右侧抽屉">
+        风格 A · 专业投研后台风
+      </button>
+      <button class="tab-btn" data-src="./style-b-terminal.html" data-note="IDE 三栏停靠：高密度矩阵 + 右侧常驻检查面板 + 底部实时切片日志流">
+        风格 B · 深色量化终端风
+      </button>
+      <button class="tab-btn" data-src="./style-c-minimal.html" data-note="延续绿白基调升级：大留白降噪卡片 + 内联单次查询 + 折叠规则边界">
+        风格 C · 极简浅色工具风
+      </button>
+    </div>
+
+    <div class="right-tools">
+      <span class="note" id="style-note">对齐仓库 asset_system：深蓝侧栏 + KPI 总览 + 卡片/表格切换 + 右侧抽屉</span>
+      <a class="open-link" id="external-link" href="./style-a-workbench.html" target="_blank" rel="noopener">新窗口全屏打开 ↗</a>
+    </div>
+  </header>
+
+  <iframe id="preview-frame" src="./style-a-workbench.html" title="原型预览"></iframe>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const src = btn.dataset.src;
+        document.getElementById('preview-frame').src = src;
+        document.getElementById('external-link').href = src;
+        document.getElementById('style-note').textContent = btn.dataset.note;
+      });
+    });
+  </script>
+</body>
+</html>

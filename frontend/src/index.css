@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+main .text-\[10px\],
+main .text-\[11px\] {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+main .text-slate-400 {
+  color: #64748b;
+}
+
+/* CSP-compliant native <progress> bars (zero inline style attributes required) */
+progress.collector-progress {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 0.45rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+progress.collector-progress::-webkit-progress-bar {
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+}
+
+progress.collector-progress::-webkit-progress-value {
+  background-color: #0d9488;
+  border-radius: 9999px;
+  transition: width 220ms ease;
+}
+
+progress.collector-progress::-moz-progress-bar {
+  background-color: #0d9488;
+  border-radius: 9999px;
+}
+
+progress.collector-progress-dark {
+  background-color: #1e293b;
+}
+
+progress.collector-progress-dark::-webkit-progress-bar {
+  background-color: #1e293b;
+}
+
+progress.collector-progress-amber::-webkit-progress-value {
+  background-color: #f59e0b;
+}
+
+progress.collector-progress-amber::-moz-progress-bar {
+  background-color: #f59e0b;
+}
+
+progress.collector-progress-rose::-webkit-progress-value {
+  background-color: #e11d48;
+}
+
+progress.collector-progress-rose::-moz-progress-bar {
+  background-color: #e11d48;
+}
+
+progress.collector-progress-emerald::-webkit-progress-value {
+  background-color: #10b981;
+}
+
+progress.collector-progress-emerald::-moz-progress-bar {
+  background-color: #10b981;
+}
+
+/* Sticky data table columns for Parquet/JSON local reader & wide warehouse tables */
+.sticky-col-head {
+  position: sticky;
+  left: 0;
+  z-index: 25;
+}
+
+.sticky-col-cell {
+  position: sticky;
+  left: 0;
+  z-index: 15;
+}
+
+.sticky-col-idx-head {
+  position: sticky;
+  left: 0;
+  z-index: 26;
+  width: 3.25rem;
+  min-width: 3.25rem;
+  max-width: 3.25rem;
+}
+
+.sticky-col-idx-cell {
+  position: sticky;
+  left: 0;
+  z-index: 16;
+  width: 3.25rem;
+  min-width: 3.25rem;
+  max-width: 3.25rem;
+}
+
+.sticky-col-first-head {
+  position: sticky;
+  left: 3.25rem;
+  z-index: 25;
+  box-shadow: 1px 0 0 0 #e2e8f0;
+}
+
+.sticky-col-first-cell {
+  position: sticky;
+  left: 3.25rem;
+  z-index: 15;
+  box-shadow: 1px 0 0 0 #f1f5f9;
+}
+
+/* Subtle custom scrollbars matching Style A workbench */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.48);
+}

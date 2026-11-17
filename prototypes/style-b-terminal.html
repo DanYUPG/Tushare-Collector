@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>风格 B · 深色量化终端风 — Tushare 股票数据采集台</title>
+  <style>
+    :root {
+      --bg-0: #090d12;
+      --bg-1: #0f151d;
+      --bg-2: #151d28;
+      --bg-hover: #1b2533;
+      --line: #212c3b;
+      --line-bright: #2f3f54;
+      --text-0: #e6edf3;
+      --text-1: #9fb0c3;
+      --text-2: #687a90;
+      --emerald: #10b981;
+      --emerald-dim: rgba(16, 185, 129, 0.14);
+      --cyan: #06b6d4;
+      --cyan-dim: rgba(6, 182, 212, 0.15);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.15);
+      --red: #ef4444;
+      --red-dim: rgba(239, 68, 68, 0.15);
+      --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-0);
+      color: var(--text-0);
+      font-family: var(--sans);
+      font-size: 12.5px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+    /* Top Telemetry Strip (Bloomberg / Quant IDE Style) */
+    .telemetry-bar {
+      height: 40px;
+      background: var(--bg-1);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+    }
+    .tele-left, .tele-right { display: flex; align-items: center; gap: 14px; }
+    .term-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--emerald);
+      letter-spacing: 0.4px;
+    }
+    .mode-tabs { display: flex; gap: 2px; background: var(--bg-0); padding: 3px; border-radius: 5px; border: 1px solid var(--line); }
+    .mode-tab {
+      padding: 4px 11px;
+      font-size: 11.5px;
+      font-family: var(--mono);
+      color: var(--text-1);
+      border-radius: 3px;
+    }
+    .mode-tab.active { background: var(--bg-2); color: var(--cyan); font-weight: 600; border: 1px solid var(--line-bright); }
+    .tele-kv {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tele-kv b { color: var(--text-0); font-weight: 600; }
+    .led { width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+
+    /* 3-Pane IDE Dock Grid */
+    .dock-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr) 360px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Left Pane: Category & Filter Tree */
+    .pane-left {
+      background: var(--bg-1);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .pane-head {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tree-list { padding: 6px; }
+    .tree-item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 9px;
+      border-radius: 4px;
+      color: var(--text-1);
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+    .tree-item:hover { background: var(--bg-hover); color: var(--text-0); }
+    .tree-item.active { background: var(--cyan-dim); color: var(--cyan); font-weight: 600; }
+    .tree-count { font-family: var(--mono); font-size: 10.5px; color: var(--text-2); }
+
+    /* Center Pane: High-Density Matrix / Parquet Viewer */
+    .pane-center {
+      background: var(--bg-0);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .filter-strip {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .term-input {
+      background: var(--bg-0);
+      border: 1px solid var(--line-bright);
+      color: var(--text-0);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      width: 260px;
+    }
+    .term-input:focus { outline: 1px solid var(--cyan); }
+    .chip-group { display: flex; gap: 6px; }
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      border: 1px solid var(--line);
+      color: var(--text-1);
+      background: var(--bg-2);
+    }
+    .chip.active { border-color: var(--emerald); color: var(--emerald); background: var(--emerald-dim); }
+
+    .matrix-scroll { flex: 1; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--bg-2);
+      color: var(--text-2);
+      font-family: var(--mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--line-bright);
+      white-space: nowrap;
+    }
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    tr.matrix-row { cursor: pointer; }
+    tr.matrix-row:hover td { background: var(--bg-hover); }
+    tr.matrix-row.selected td { background: #132736; }
+
+    .st-tag {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .st-ok { background: var(--emerald-dim); color: var(--emerald); border: 1px solid rgba(16,185,129,0.3); }
+    .st-warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .st-idle { background: var(--bg-2); color: var(--text-2); border: 1px solid var(--line); }
+    .st-run { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(6,182,212,0.35); }
+
+    .cov-bar {
+      width: 78px;
+      height: 5px;
+      background: var(--bg-2);
+      border-radius: 2px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .cov-fill { height: 100%; background: var(--emerald); }
+
+    /* Right Pane: Always-On Inspector & Two-Step Plan Launcher */
+    .pane-right {
+      background: var(--bg-1);
+      border-left: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .insp-section {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .insp-title { font-size: 14px; font-weight: 650; color: var(--text-0); }
+    .insp-code { font-family: var(--mono); color: var(--cyan); font-size: 12px; }
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 6px 8px;
+      margin-top: 10px;
+      font-size: 11.5px;
+    }
+    .kv-grid span { color: var(--text-2); }
+    .heat-strip {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 2px;
+      margin-top: 8px;
+    }
+    .heat-cell { height: 12px; border-radius: 2px; background: var(--emerald); opacity: 0.8; }
+    .heat-cell.gap { background: var(--amber); opacity: 1; }
+    .heat-cell.empty { background: var(--bg-2); }
+
+    .term-btn {
+      padding: 7px 12px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      border: 1px solid var(--line-bright);
+      background: var(--bg-2);
+      color: var(--text-0);
+    }
+    .term-btn:hover { border-color: var(--cyan); }
+    .term-btn-primary {
+      background: var(--emerald);
+      color: #04130d;
+      border-color: var(--emerald);
+    }
+    .term-btn-primary:hover { filter: brightness(1.08); }
+
+    .plan-terminal {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--bg-0);
+      border: 1px solid var(--line-bright);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.65;
+      color: var(--text-1);
+    }
+
+    /* Bottom Dock: Live Serial Queue Console */
+    .console-dock {
+      height: 138px;
+      background: #070a0e;
+      border-top: 1px solid var(--line-bright);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .console-dock.collapsed { height: 28px; }
+    .console-bar {
+      height: 28px;
+      padding: 0 12px;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+    .console-logs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--text-1);
+    }
+    .log-ok { color: var(--emerald); }
+    .log-warn { color: var(--amber); }
+    .log-ts { color: var(--text-2); margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <header class="telemetry-bar">
+    <div class="tele-left">
+      <div class="term-brand"><span class="led"></span> TUSHARE::RAW_COLLECTOR</div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-pane="matrix">01 DATASET_MATRIX [102]</button>
+        <button class="mode-tab" data-pane="parquet">02 PARQUET_INSPECTOR</button>
+        <button class="mode-tab" data-pane="live">03 SINGLE_QUERY</button>
+      </div>
+    </div>
+    <div class="tele-right">
+      <div class="tele-kv">WORKER: <b style="color:var(--emerald)">SERIAL_ACTIVE</b></div>
+      <div class="tele-kv">RPM_LIMITER: <b>14 / 30</b></div>
+      <div class="tele-kv">CUTOFF(D+1): <b>2026-11-14</b></div>
+      <div class="tele-kv">TOKEN: <b style="color:var(--cyan)">IN_MEMORY_OK</b></div>
+    </div>
+  </header>
+
+  <div class="dock-main">
+    <!-- LEFT TREE -->
+    <aside class="pane-left">
+      <div class="pane-head"><span>STOCK CATEGORIES</span><span>8</span></div>
+      <div class="tree-list" id="cat-tree"></div>
+      <div class="pane-head" style="margin-top:8px"><span>SAVED BUNDLES</span><span>+</span></div>
+      <div class="tree-list">
+        <button class="tree-item" onclick="selectBundle('盘后日频三件套')"><span>▸ 盘后日频三件套</span><span class="tree-count">3</span></button>
+        <button class="tree-item" onclick="selectBundle('财报季全量回查')"><span>▸ 财报季全量回查</span><span class="tree-count">4</span></button>
+      </div>
+    </aside>
+
+    <!-- CENTER PANE -->
+    <section class="pane-center">
+      <!-- PANE 1: MATRIX -->
+      <div id="pane-matrix" style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+        <div class="filter-strip">
+          <div class="chip-group" id="status-chips">
+            <button class="chip active" data-st="all">ALL (102)</button>
+            <button class="chip" data-st="ok">COVERED</button>
+            <button class="chip" data-st="warn">ROW_LIMIT / STALE</button>
+            <button class="chip" data-st="idle">UNINITIALIZED</button>
+          </div>
+          <input class="term-input" id="matrix-search" placeholder="Filter API / 名称 / 策略 (e.g. daily, stock_quarter)…">
+        </div>
+        <div class="matrix-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>API_NAME</th>
+                <th>数据集</th>
+                <th>STRATEGY</th>
+                <th>PARTITIONS</th>
+                <th>LAST_COVERED</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PANE 2: PARQUET INSPECTOR -->
+      <div id="pane-parquet" style="display:none;flex-direction:column;height:100%;overflow:hidden">
+        <div class="filter-strip">
+          <div class="mono" style="font-size:11.5px;color:var(--cyan)">FILE: .../stocks/market/daily/b25db815/data.parquet (SHA256 VERIFIED ✓)</div>
+          <div style="display:flex;gap:6px">
+            <input class="term-input" style="width:190px" placeholder="Search rows (case-insensitive)…">
+            <button class="term-btn">EXPORT_BUNDLE</button>
+            <button class="term-btn" style="color:var(--red);border-color:rgba(239,68,68,0.4)">PURGE_SLICE</button>
+          </div>
+        </div>
+        <div class="matrix-scroll">
+          <table class="mono">
+            <thead>
+              <tr><th>#</th><th>ts_code:str</th><th>trade_date:str</th><th>open:f64</th><th>high:f64</th><th>low:f64</th><th>close:f64</th><th>pct_chg:f64</th><th>amount:f64</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td style="color:var(--cyan)">000001.SZ</td><td>20261113</td><td>11.42</td><td>11.68</td><td>11.39</td><td style="color:var(--emerald)">11.61</td><td style="color:var(--emerald)">+1.66%</td><td>1842910.4</td></tr>
+              <tr><td>2</td><td style="color:var(--cyan)">000002.SZ</td><td>20261113</td><td>7.85</td><td>7.90</td><td>7.71</td><td style="color:var(--red)">7.74</td><td style="color:var(--red)">-1.40%</td><td>952104.2</td></tr>
+              <tr><td>3</td><td style="color:var(--cyan)">600000.SH</td><td>20261113</td><td>9.92</td><td>10.08</td><td>9.90</td><td style="color:var(--emerald)">10.05</td><td style="color:var(--emerald)">+1.31%</td><td>684120.0</td></tr>
+              <tr><td>4</td><td style="color:var(--cyan)">600519.SH</td><td>20261113</td><td>1540.00</td><td>1562.80</td><td>1536.00</td><td style="color:var(--emerald)">1558.00</td><td style="color:var(--emerald)">+1.17%</td><td>4812095.8</td></tr>
+              <tr><td>5</td><td style="color:var(--cyan)">300750.SZ</td><td>20261113</td><td>248.50</td><td>255.00</td><td>247.10</td><td style="color:var(--emerald)">253.80</td><td style="color:var(--emerald)">+2.13%</td><td>6910442.1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PANE 3: SINGLE LIVE QUERY -->
+      <div id="pane-live" style="display:none;padding:16px;gap:12px;flex-direction:column">
+        <div class="insp-title">SINGLE SDK QUERY (单次查询 · 不污染数据集台账)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <input class="term-input" style="width:100%" value="daily">
+          <input class="term-input" style="width:100%" value='{"ts_code":"600519.SH","start_date":"20261101"}'>
+          <button class="term-btn term-btn-primary">1. CHECK_REQUEST_SPEC</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT INSPECTOR (NO MODAL POPUPS NEEDED) -->
+    <aside class="pane-right">
+      <div class="pane-head"><span>DATASET INSPECTOR & PLANNER</span><span>REV #4</span></div>
+      <div class="insp-section">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="insp-title" id="insp-name">财务指标</span>
+          <span class="st-tag st-warn" id="insp-badge">ROW_LIMIT(2)</span>
+        </div>
+        <div class="insp-code" id="insp-api">api_name = fina_indicator · entry #80</div>
+        <div class="kv-grid">
+          <span>切片语义</span><div id="insp-rule">L/D/P 股票池 × 报告期 16 年段</div>
+          <span>依赖校验</span><div style="color:var(--emerald)" class="mono">trade_cal ✓ | stock_basic(9) ✓</div>
+          <span>分区覆盖</span><div class="mono" id="insp-cov">5,118 OK / 2 ROW_LIMIT_HIT</div>
+          <span>回查窗口</span><div class="mono">7 calendar days · 30 RPM</div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-2)">近 24 个分区台账状态 (绿=已归档 / 黄=待补或触顶)：</div>
+        <div class="heat-strip">
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div>
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div>
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div>
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell"></div>
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell gap"></div><div class="heat-cell gap"></div>
+          <div class="heat-cell"></div><div class="heat-cell"></div><div class="heat-cell empty"></div><div class="heat-cell empty"></div>
+        </div>
+      </div>
+
+      <div class="insp-section" style="flex:1">
+        <div class="pane-head" style="padding:0 0 8px;border:none"><span>TWO-STEP PLAN CONFIRMATION</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <input class="term-input" style="width:100%" value="2015-01-01">
+          <input class="term-input" style="width:100%" value="2026-11-14">
+        </div>
+        <select class="term-input" style="width:100%;margin-bottom:10px" id="insp-mode">
+          <option value="split">SPLIT_ROW_LIMIT (二分触顶区间)</option>
+          <option value="inc">INCREMENTAL (增量 + 近期回查)</option>
+          <option value="full">FULL_RELOAD (重拉所选范围)</option>
+        </select>
+        <div style="display:flex;gap:8px">
+          <button class="term-btn" style="flex:1" onclick="generatePlan()">1. 生成检查计划</button>
+          <button class="term-btn term-btn-primary" style="flex:1" id="exec-btn" onclick="enqueueRun()">2. 确认入队执行</button>
+        </div>
+
+        <div class="plan-terminal" id="plan-output">
+          [PLAN #f82a90 · TTL 30m · NO VENDOR CALL]<br>
+          > strategy     : split_row_limit<br>
+          > parent_failed: 2 slices (hit 100-row cap)<br>
+          > child_slices : 4 closed half-intervals<br>
+          > est_duration : ~8.0s @ 30 req/min<br>
+          > raw_format   : data.parquet (zstd)
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- BOTTOM LIVE QUEUE DOCK -->
+  <footer class="console-dock" id="console-dock">
+    <div class="console-bar">
+      <span>▸ SERIAL RUNNER STREAM · ACTIVE RUN: #94f1c2a0 (daily · 184/242 slices · 76.0%)</span>
+      <button class="mono" style="color:var(--cyan)" onclick="document.getElementById('console-dock').classList.toggle('collapsed')">[TOGGLE DOCK _]</button>
+    </div>
+    <div class="console-logs" id="console-logs">
+      <div><span class="log-ts">00:58:12.104</span><span class="log-ok">[OK]</span> slice #0182 daily(trade_date=20261110) -> 5,381 rows | parquet 418KB | sha256=8a06e1...22b</div>
+      <div><span class="log-ts">00:58:14.118</span><span class="log-ok">[OK]</span> slice #0183 daily(trade_date=20261111) -> 5,384 rows | parquet 421KB | sha256=41bc09...9ef</div>
+      <div><span class="log-ts">00:58:16.122</span><span class="log-warn">[RATE_GUARD]</span> global token bucket pacing @ 30 RPM (next dispatch in 1.8s)...</div>
+    </div>
+  </footer>
+
+  <script>
+    const cats = [
+      ['ALL', '全部目录', 102], ['basic', '基础数据', 13], ['market', '行情数据', 17],
+      ['financial', '财务数据', 10], ['reference', '参考数据', 15], ['feature', '特色数据', 11],
+      ['margin', '两融转融通', 7], ['moneyflow', '资金流向', 7], ['limit', '打板专题', 22]
+    ];
+    const rows = [
+      { api: 'stock_basic', name: '股票列表', cat: 'basic', strat: 'exchange×status(15)', pct: 100, cov: '15/15', last: '2026-11-14', st: 'ok', label: 'COVERED' },
+      { api: 'trade_cal', name: '交易日历', cat: 'basic', strat: 'annual_calendar', pct: 100, cov: '74/74', last: '2026-12-31', st: 'ok', label: 'COVERED' },
+      { api: 'daily', name: '日线行情', cat: 'market', strat: 'trading_day', pct: 98, cov: '1680/1683', last: '2026-11-11', st: 'run', label: 'RUNNING' },
+      { api: 'daily_basic', name: '每日指标', cat: 'market', strat: 'trading_day', pct: 98, cov: '1680/1683', last: '2026-11-11', st: 'warn', label: 'STALE(-3d)' },
+      { api: 'adj_factor', name: '复权因子', cat: 'market', strat: 'trading_day', pct: 100, cov: '1683/1683', last: '2026-11-14', st: 'ok', label: 'COVERED' },
+      { api: 'stk_mins', name: '历史分钟线', cat: 'market', strat: 'stock×day×freq', pct: 0, cov: '0', last: '—', st: 'idle', label: 'UNINIT' },
+      { api: 'fina_indicator', name: '财务指标', cat: 'financial', strat: 'stock×16y_period', pct: 99, cov: '5118/5120', last: '2026-09-30', st: 'warn', label: 'ROW_LIMIT(2)' },
+      { api: 'income', name: '利润表', cat: 'financial', strat: 'stock×16y_ann', pct: 100, cov: '5120/5120', last: '2026-11-10', st: 'ok', label: 'COVERED' },
+      { api: 'dividend', name: '分红送股', cat: 'financial', strat: 'natural_ann_date', pct: 100, cov: '3650/3650', last: '2026-11-14', st: 'ok', label: 'COVERED' },
+      { api: 'moneyflow', name: '个股资金流向', cat: 'moneyflow', strat: 'trading_day', pct: 100, cov: '940/940', last: '2026-11-14', st: 'ok', label: 'COVERED' },
+      { api: 'ths_member', name: '同花顺概念成分', cat: 'feature', strat: 'stock_snapshot', pct: 0, cov: '0', last: 'SNAPSHOT_ONLY', st: 'idle', label: 'UNINIT' },
+      { api: 'rt_k', name: '实时日线快照', cat: 'market', strat: 'realtime_only', pct: 0, cov: '0', last: 'LIVE_ONLY', st: 'idle', label: 'REALTIME' }
+    ];
+
+    let curCat = 'ALL';
+    let curSt = 'all';
+    let selApi = 'fina_indicator';
+
+    function render() {
+      const q = document.getElementById('matrix-search').value.trim().toLowerCase();
+      document.getElementById('cat-tree').innerHTML = cats.map(([id, name, n]) => `
+        <button class="tree-item ${curCat === id ? 'active' : ''}" onclick="setCat('${id}')">
+          <span>${name}</span><span class="tree-count">${n}</span>
+        </button>
+      `).join('');
+
+      const filtered = rows.filter(r =>
+        (curCat === 'ALL' || r.cat === curCat) &&
+        (curSt === 'all' || r.st === curSt || (curSt === 'warn' && r.st === 'run')) &&
+        (!q || r.api.includes(q) || r.name.includes(q) || r.strat.includes(q))
+      );
+
+      document.getElementById('matrix-body').innerHTML = filtered.map(r => `
+        <tr class="matrix-row ${r.api === selApi ? 'selected' : ''}" onclick="inspectRow('${r.api}')">
+          <td class="mono" style="color:var(--cyan)">${r.api}</td>
+          <td><strong>${r.name}</strong></td>
+          <td class="mono" style="color:var(--text-1)">${r.strat}</td>
+          <td class="mono"><span class="cov-bar"><span class="cov-fill" style="width:${r.pct}%"></span></span>${r.cov}</td>
+          <td class="mono">${r.last}</td>
+          <td><span class="st-tag st-${r.st}">${r.label}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    window.setCat = id => { curCat = id; render(); };
+    window.inspectRow = api => {
+      selApi = api;
+      const r = rows.find(x => x.api === api);
+      if (r) {
+        document.getElementById('insp-name').textContent = r.name;
+        document.getElementById('insp-api').textContent = `api_name = ${r.api} · cat = ${r.cat}`;
+        document.getElementById('insp-rule').textContent = r.strat;
+        document.getElementById('insp-cov').textContent = `${r.cov} (${r.pct}%)`;
+        document.getElementById('insp-badge').textContent = r.label;
+        document.getElementById('insp-badge').className = `st-tag st-${r.st}`;
+      }
+      render();
+    };
+    window.selectBundle = name => {
+      document.getElementById('plan-output').innerHTML = `[BUNDLE PLAN · ${name}]<br>> stage 1: verify trade_cal & stock_basic (OK)<br>> stage 2: daily(3) + daily_basic(3) + adj_factor(0)<br>> total_slices: 6 (@ 30 RPM ~12s)`;
+    };
+    window.generatePlan = () => {
+      document.getElementById('plan-output').innerHTML = `[PLAN REFRESHED @ ${new Date().toTimeString().slice(0,8)}]<br>> target: ${selApi}<br>> mode: ${document.getElementById('insp-mode').value}<br>> dependencies: HASH_VERIFIED<br>> ready_to_launch: TRUE`;
+    };
+    window.enqueueRun = () => {
+      const log = document.getElementById('console-logs');
+      const div = document.createElement('div');
+      div.innerHTML = `<span class="log-ts">${new Date().toTimeString().slice(0,8)}.002</span><span class="log-ok">[ENQUEUED]</span> plan for ${selApi} committed atomically to SQLite queue.`;
+      log.prepend(div);
+    };
+
+    document.getElementById('matrix-search').addEventListener('input', render);
+    document.querySelectorAll('#status-chips button').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#status-chips button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        curSt = b.dataset.st;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.mode-tab').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.mode-tab').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        ['matrix', 'parquet', 'live'].forEach(p => {
+          document.getElementById('pane-' + p).style.display = p === b.dataset.pane ? 'flex' : 'none';
+        });
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2385 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="workbench">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tushare 本地股票数据工作台 · 新版前端设计 Demo</title>
+  <style>
+    /* ==========================================================================
+       1. Multi-Theme Design Tokens (A: 投研工作台 | B: 深色量化终端 | C: 极简瑞士风)
+       ========================================================================== */
+    :root,
+    [data-theme="workbench"] {
+      --bg-app: #f3f6fa;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-hover: #f1f5f9;
+      --bg-active: #f0fdfa;
+      --bg-sidebar: #091426;
+      --bg-sidebar-hover: #12223d;
+      --bg-sidebar-active: rgba(20, 184, 166, 0.16);
+      --border-sidebar: #162847;
+      --text-sidebar: #cbd5e1;
+      --text-sidebar-muted: #64748b;
+      --text-sidebar-strong: #ffffff;
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      --accent: #0d9488;
+      --accent-hover: #0f766e;
+      --accent-fg: #ffffff;
+      --accent-soft: #f0fdfa;
+      --accent-border: rgba(13, 148, 136, 0.32);
+      --accent-text: #0f766e;
+
+      --ok-bg: #ecfdf5;
+      --ok-text: #047857;
+      --ok-border: #a7f3d0;
+      --warn-bg: #fffbeb;
+      --warn-text: #b45309;
+      --warn-border: #fde68a;
+      --err-bg: #fef2f2;
+      --err-text: #be123c;
+      --err-border: #fecdd3;
+
+      --up-color: #dc2626;
+      --down-color: #059669;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+      --shadow-float: 0 16px 40px -8px rgba(15, 23, 42, 0.18);
+    }
+
+    [data-theme="terminal"] {
+      --bg-app: #090d16;
+      --bg-surface: #111827;
+      --bg-subtle: #0d1320;
+      --bg-hover: #1a2438;
+      --bg-active: rgba(20, 184, 166, 0.12);
+      --bg-sidebar: #070b12;
+      --bg-sidebar-hover: #111a2c;
+      --bg-sidebar-active: rgba(20, 184, 166, 0.16);
+      --border-sidebar: #1e293b;
+      --text-sidebar: #94a3b8;
+      --text-sidebar-muted: #475569;
+      --text-sidebar-strong: #f8fafc;
+
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-subtle: #1e293b;
+      --border-strong: #334155;
+
+      --accent: #14b8a6;
+      --accent-hover: #0d9488;
+      --accent-fg: #042f2e;
+      --accent-soft: rgba(20, 184, 166, 0.12);
+      --accent-border: rgba(20, 184, 166, 0.35);
+      --accent-text: #2dd4bf;
+
+      --ok-bg: rgba(16, 185, 129, 0.12);
+      --ok-text: #34d399;
+      --ok-border: rgba(16, 185, 129, 0.3);
+      --warn-bg: rgba(245, 158, 11, 0.12);
+      --warn-text: #fbbf24;
+      --warn-border: rgba(245, 158, 11, 0.3);
+      --err-bg: rgba(244, 63, 94, 0.12);
+      --err-text: #fb7185;
+      --err-border: rgba(244, 63, 94, 0.3);
+
+      --up-color: #f87171;
+      --down-color: #34d399;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --shadow-card: none;
+      --shadow-float: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    [data-theme="minimal"] {
+      --bg-app: #fafafa;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f4f4f5;
+      --bg-hover: #f4f4f5;
+      --bg-active: #f4f4f5;
+      --bg-sidebar: #f4f4f5;
+      --bg-sidebar-hover: #e4e4e7;
+      --bg-sidebar-active: #ffffff;
+      --border-sidebar: #e4e4e7;
+      --text-sidebar: #52525b;
+      --text-sidebar-muted: #71717a;
+      --text-sidebar-strong: #18181b;
+
+      --text-primary: #18181b;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --border-subtle: #e4e4e7;
+      --border-strong: #d4d4d8;
+
+      --accent: #18181b;
+      --accent-hover: #27272a;
+      --accent-fg: #ffffff;
+      --accent-soft: #f4f4f5;
+      --accent-border: #d4d4d8;
+      --accent-text: #18181b;
+
+      --ok-bg: #f0fdf4;
+      --ok-text: #15803d;
+      --ok-border: #bbf7d0;
+      --warn-bg: #fefce8;
+      --warn-text: #a16207;
+      --warn-border: #fef08a;
+      --err-bg: #fef2f2;
+      --err-text: #b91c1c;
+      --err-border: #fecaca;
+
+      --up-color: #dc2626;
+      --down-color: #16a34a;
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-float: 0 16px 36px rgba(0, 0, 0, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+    .mono {
+      font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .tabular { font-variant-numeric: tabular-nums; }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; background: none; border: none; }
+
+    /* ==========================================================================
+       2. Top Prototype Studio Switcher (For Interactive Design Comparison)
+       ========================================================================== */
+    .studio-bar {
+      height: 38px;
+      background: #060b14;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      z-index: 60;
+      flex-shrink: 0;
+    }
+    .studio-left { display: flex; align-items: center; gap: 10px; }
+    .studio-pill {
+      background: rgba(20, 184, 166, 0.18);
+      color: #5eead4;
+      border: 1px solid rgba(94, 234, 212, 0.3);
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .theme-tabs {
+      display: flex;
+      gap: 4px;
+      background: #111827;
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid #1f2937;
+    }
+    .theme-tab {
+      padding: 3px 11px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      color: #94a3b8;
+      transition: all 0.15s;
+    }
+    .theme-tab:hover { color: #f8fafc; }
+    .theme-tab.active {
+      background: #0d9488;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    .dot-ok { background: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); }
+    .dot-warn { background: #f59e0b; }
+    .dot-pulse { animation: pulse 1.6s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ==========================================================================
+       3. App Shell Layout (Sidebar + Main + Log Dock)
+       ========================================================================== */
+    .app-root {
+      display: flex;
+      height: calc(100vh - 38px);
+      width: 100%;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 228px;
+      flex-shrink: 0;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-sidebar);
+      color: var(--text-sidebar);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    .brand {
+      height: 54px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-sidebar);
+    }
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(20, 184, 166, 0.18);
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      color: #2dd4bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    [data-theme="minimal"] .brand-icon {
+      background: #18181b;
+      border-color: #18181b;
+      color: #ffffff;
+    }
+    .brand-title { font-size: 13.5px; font-weight: 650; color: var(--text-sidebar-strong); line-height: 1.2; }
+    .brand-sub { font-size: 11px; color: var(--text-sidebar-muted); }
+
+    .nav-scroll { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .nav-section-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-sidebar-muted);
+      padding: 6px 10px 6px;
+    }
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      color: var(--text-sidebar);
+      text-align: left;
+      margin-bottom: 2px;
+      transition: all 0.12s;
+    }
+    .nav-btn:hover { background: var(--bg-sidebar-hover); color: var(--text-sidebar-strong); }
+    .nav-btn.active {
+      background: var(--bg-sidebar-active);
+      color: var(--text-sidebar-strong);
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px var(--accent-border);
+    }
+    [data-theme="minimal"] .nav-btn.active {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06), inset 0 0 0 1px var(--border-subtle);
+    }
+    .nav-btn-left { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .nav-icon { width: 15px; height: 15px; opacity: 0.85; flex-shrink: 0; }
+    .nav-badge {
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--text-sidebar);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    .nav-badge.teal { background: rgba(20, 184, 166, 0.22); color: #5eead4; }
+    [data-theme="minimal"] .nav-badge.teal { background: #e4e4e7; color: #18181b; }
+    .nav-badge.amber { background: rgba(245, 158, 11, 0.22); color: #fcd34d; }
+    [data-theme="minimal"] .nav-badge.amber { background: #fef3c7; color: #92400e; }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border-sidebar);
+      padding: 12px;
+      font-size: 11.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .token-row { display: flex; align-items: center; justify-content: space-between; }
+    .token-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+    }
+    [data-theme="minimal"] .token-pill { background: #dcfce7; color: #15803d; }
+
+    /* Main Column */
+    .main-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-app);
+      overflow: hidden;
+    }
+    .topbar {
+      height: 54px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .topbar-title-wrap { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+    .topbar-title { font-size: 15px; font-weight: 650; white-space: nowrap; }
+    .topbar-sub { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-tools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Reusable Buttons & Pills */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 500;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+    .btn-sm { padding: 4px 9px; font-size: 11.5px; }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-fg);
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-soft {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      color: var(--accent-text);
+      font-weight: 550;
+    }
+    .btn-soft:hover { opacity: 0.9; }
+    .kbd {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10.5px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 550;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .badge-ok { background: var(--ok-bg); color: var(--ok-text); border-color: var(--ok-border); }
+    .badge-warn { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-border); }
+    .badge-err { background: var(--err-bg); color: var(--err-text); border-color: var(--err-border); }
+    .badge-neutral { background: var(--bg-subtle); color: var(--text-secondary); border-color: var(--border-subtle); }
+
+    /* Content Viewport */
+    .viewport {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+    }
+    .page-pad {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 20px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* ==========================================================================
+       4. View 1: 我的数据 (Declarative Needs + Pipeline + Bridge)
+       ========================================================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+    }
+    .kpi-card {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-label { font-size: 11.5px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+    .kpi-val { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .kpi-foot { font-size: 11.5px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+
+    /* Compact Contract Summary Strip (Replaces Wall of Disclaimer Text!) */
+    .contract-strip {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .contract-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .contract-tags { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .contract-tag { display: inline-flex; align-items: center; gap: 5px; }
+    .contract-detail {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-subtle);
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .contract-strip.open .contract-detail { display: grid; }
+
+    /* Need Pipeline Card */
+    .need-card { overflow: hidden; }
+    .need-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .need-title-row { display: flex; align-items: center; gap: 10px; }
+    .need-title { font-size: 15.5px; font-weight: 650; }
+    .need-meta {
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-wrap: wrap;
+    }
+
+    /* Inline Sync Confirm Bar */
+    .auth-banner {
+      background: var(--warn-bg);
+      border-bottom: 1px solid var(--warn-border);
+      color: var(--warn-text);
+      padding: 12px 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 12px;
+    }
+    .auth-banner.visible { display: flex; }
+
+    /* 4-Stage Pipeline Stepper */
+    .pipeline-box {
+      padding: 14px 20px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .pipeline-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .step-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .step-item.running {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border: 1px solid var(--ok-border);
+      flex-shrink: 0;
+    }
+    .step-item.running .step-num {
+      background: var(--accent);
+      color: var(--accent-fg);
+      border-color: var(--accent);
+    }
+    .step-name { font-size: 12px; font-weight: 600; line-height: 1.25; }
+    .step-sub { font-size: 11px; color: var(--text-muted); }
+
+    /* 3 Managed Dataset Asset Sub-cards */
+    .managed-grid {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .ds-asset-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .ds-asset-card:hover { border-color: var(--accent); }
+    .ds-asset-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .ds-asset-name { font-size: 13.5px; font-weight: 650; }
+    .ds-asset-code { font-size: 11.5px; color: var(--text-muted); }
+    .ds-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+    }
+    .ds-metric-k { font-size: 10.5px; color: var(--text-muted); }
+    .ds-metric-v { font-size: 13px; font-weight: 650; }
+    .ds-asset-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+      font-size: 11.5px;
+    }
+
+    /* Bridge Section: On-Demand Datasets */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .section-title { font-size: 14px; font-weight: 650; }
+    .section-sub { font-size: 12px; color: var(--text-muted); }
+    .bridge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .bridge-card {
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* ==========================================================================
+       5. View 2: 数据浏览 (IDE Split-Pane Warehouse Explorer)
+       ========================================================================== */
+    .warehouse-split {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    .wh-tree {
+      width: 264px;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .wh-tree-top {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+    }
+    .input:focus { border-color: var(--accent); background: var(--bg-surface); }
+    .seg-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--bg-subtle);
+      padding: 2px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .seg-btn {
+      padding: 3px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .seg-btn.active {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .wh-tree-list { flex: 1; overflow-y: auto; padding: 8px; }
+    .domain-group { margin-bottom: 10px; }
+    .domain-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .tree-item {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      text-align: left;
+      margin-top: 1px;
+    }
+    .tree-item:hover { background: var(--bg-hover); }
+    .tree-item.active {
+      background: var(--bg-active);
+      color: var(--accent-text);
+      font-weight: 600;
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+    .tree-item-name { font-size: 12px; truncate: true; }
+    .tree-item-code { font-size: 10.5px; color: var(--text-muted); }
+    .tree-item-rows { font-size: 10.5px; color: var(--text-muted); }
+
+    /* Right Data Grid Workspace */
+    .wh-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-surface);
+      overflow: hidden;
+    }
+    .wh-header-bar {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: var(--bg-surface);
+    }
+    .wh-filter-bar {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quick-pill {
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+    }
+    .quick-pill.active, .quick-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent-text);
+      background: var(--accent-soft);
+    }
+
+    /* High-Density Sticky Data Grid */
+    .grid-wrap {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+    }
+    table.data-grid {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+    }
+    table.data-grid thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-strong);
+      border-right: 1px solid var(--border-subtle);
+      padding: 7px 12px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    table.data-grid thead th.num { text-align: right; }
+    .th-cn { display: block; font-size: 11.5px; color: var(--text-primary); }
+    .th-meta { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--text-muted); font-weight: 400; }
+    table.data-grid thead th.num .th-meta { justify-content: flex-end; }
+    .dtype-chip {
+      padding: 0 4px;
+      border-radius: 3px;
+      background: var(--bg-hover);
+      font-size: 9.5px;
+    }
+    table.data-grid tbody tr { cursor: pointer; transition: background 0.08s; }
+    table.data-grid tbody tr:hover td { background: var(--bg-hover); }
+    table.data-grid tbody tr.selected td { background: var(--bg-active); }
+    table.data-grid tbody td {
+      padding: 6.5px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+      white-space: nowrap;
+      background: var(--bg-surface);
+    }
+    table.data-grid tbody td.num { text-align: right; }
+    .val-up { color: var(--up-color); font-weight: 600; }
+    .val-down { color: var(--down-color); font-weight: 600; }
+    .plain-numbers .val-up, .plain-numbers .val-down { color: var(--text-primary); font-weight: 500; }
+
+    .wh-footer {
+      height: 36px;
+      padding: 0 16px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       6. View 3: 运行记录 & View 4: 102 接口预置目录
+       ========================================================================== */
+    .thread-bar {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .thread-slot {
+      height: 8px;
+      border-radius: 3px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+    }
+    .thread-slot.busy { background: var(--accent); border-color: var(--accent); }
+
+    .recovery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .recovery-card {
+      padding: 14px;
+      border-left: 3px solid var(--warn-text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .recovery-card.err { border-left-color: var(--err-text); }
+
+    /* ==========================================================================
+       7. Slide-Over Drawers, Modals & Bottom Live Log Dock
+       ========================================================================== */
+    .backdrop {
+      position: fixed;
+      inset: 38px 0 0 0;
+      background: rgba(9, 14, 26, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 70;
+      display: none;
+      justify-content: flex-end;
+    }
+    .backdrop.open { display: flex; }
+    .drawer {
+      width: 480px;
+      max-width: 92vw;
+      height: 100%;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-float);
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+    .drawer-foot {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .modal-center {
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      width: 640px;
+      max-width: 92vw;
+      max-height: 84vh;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-float);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Bottom Collapsible Live Log Dock */
+    .log-dock {
+      height: 175px;
+      background: #070d19;
+      color: #cbd5e1;
+      border-top: 1px solid #1e293b;
+      display: none;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .log-dock.open { display: flex; }
+    .log-dock-head {
+      height: 32px;
+      padding: 0 16px;
+      background: #0b1324;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+    .log-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px;
+      font-size: 11.5px;
+      line-height: 1.65;
+    }
+    .log-line { display: flex; gap: 10px; }
+    .log-ts { color: #64748b; }
+    .log-tag { color: #2dd4bf; min-width: 92px; }
+
+    .hidden { display: none !important; }
+    .form-row { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 12px; font-weight: 550; color: var(--text-secondary); }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 95;
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      box-shadow: var(--shadow-float);
+      display: none;
+    }
+    .toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== Top Design Studio Switcher ==================== -->
+  <div class="studio-bar">
+    <div class="studio-left">
+      <span class="studio-pill">前端重构交互 Demo</span>
+      <span>针对痛点重做：① 首页流水线资产化 ② 数据浏览 IDE 分栏 ③ 托管与 102 接口打通</span>
+    </div>
+    <div class="theme-tabs" role="tablist" aria-label="视觉风格切换">
+      <button class="theme-tab active" data-set-theme="workbench">风格 A · 现代投研工作台</button>
+      <button class="theme-tab" data-set-theme="terminal">风格 B · 深色量化终端</button>
+      <button class="theme-tab" data-set-theme="minimal">风格 C · 极简瑞士工具</button>
+    </div>
+    <div class="live-indicator">
+      <span class="dot dot-ok" id="conn-dot"></span>
+      <span id="conn-text">正在检测 :7110 实时数据…</span>
+    </div>
+  </div>
+
+  <!-- ==================== Main Application Shell ==================== -->
+  <div class="app-root">
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">TS</div>
+        <div>
+          <div class="brand-title">Tushare Collector</div>
+          <div class="brand-sub">本地股票数据工作台</div>
+        </div>
+      </div>
+
+      <nav class="nav-scroll">
+        <div class="nav-section-label">核心数据工作区</div>
+        <button class="nav-btn active" data-nav="needs">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>我的数据</span>
+          </span>
+          <span class="nav-badge teal">托管 3</span>
+        </button>
+
+        <button class="nav-btn" data-nav="warehouse">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span>数据浏览</span>
+          </span>
+          <span class="nav-badge teal" id="nav-wh-badge">已建 4/81</span>
+        </button>
+
+        <button class="nav-btn" data-nav="runs">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>运行记录</span>
+          </span>
+          <span class="nav-badge" id="nav-run-badge">空闲</span>
+        </button>
+
+        <div class="nav-section-label" style="margin-top: 14px; display:flex; justify-content:space-between; align-items:center;">
+          <span>高级与扩展工具</span>
+        </div>
+        <button class="nav-btn" data-nav="datasets">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h12"/></svg>
+            <span>预置采集目录</span>
+          </span>
+          <span class="nav-badge">102 接口</span>
+        </button>
+        <button class="nav-btn" onclick="openModal('quickQueryModal')">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <span>单次 API 查询</span>
+          </span>
+          <span class="nav-badge">即时</span>
+        </button>
+        <button class="nav-btn" onclick="showToast('原始归档阅读器：按 9 大研究语义域直接校验并预览 Raw Parquet 切片')">
+          <span class="nav-btn-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+            <span>原始归档 (Raw)</span>
+          </span>
+          <span class="nav-badge">SHA256</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="token-row">
+          <span style="opacity:0.75">Tushare 凭证</span>
+          <span class="token-pill">● 8000分 · 进程有效</span>
+        </div>
+        <div class="mono" style="font-size:10px; color:var(--text-sidebar-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="tushare_collector/data/raw">
+          Raw: …/tushare_collector/data/raw
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Right Column -->
+    <div class="main-area">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-title-wrap">
+          <h1 class="topbar-title" id="topbar-title">我的数据</h1>
+          <span class="topbar-sub" id="topbar-sub">声明式长期数据需求 · 自动准备日历、差异采集、回读校验与快照发布</span>
+        </div>
+        <div class="topbar-tools">
+          <button class="btn btn-sm" onclick="openModal('cmdModal')" title="全局快速跳转">
+            <span>快速跳转</span>
+            <span class="kbd">⌘K</span>
+          </button>
+          <button class="btn btn-sm mono" onclick="switchView('runs')" title="并发线程与全局限流">
+            <span class="dot dot-ok"></span>
+            <span id="worker-pill-text">16 线程 · 500 RPM</span>
+          </button>
+          <button class="btn btn-sm" id="btn-log-toggle" onclick="toggleLogDock()">
+            <span>实时日志台</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ==================== VIEWPORT ==================== -->
+      <div class="viewport">
+
+        <!-- ==================== VIEW 1: 我的数据 ==================== -->
+        <section id="view-needs" class="page-pad">
+          <!-- KPI Summary Row -->
+          <div class="kpi-grid">
+            <div class="card kpi-card">
+              <div class="kpi-label"><span>本地标准仓总记录</span><span class="badge badge-ok">离线直读</span></div>
+              <div class="kpi-val mono">7,030.1 万行</div>
+              <div class="kpi-foot">已建标准快照 <strong>4 / 81</strong> 表 · 零网络查询</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label"><span>自动托管需求</span><span class="badge badge-ok">● 运行正常</span></div>
+              <div class="kpi-val tabular">1 项启用中</div>
+              <div class="kpi-foot">每日北京时间 <strong class="mono">20:00</strong> 尝试 · 回查 7 日</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label"><span>最近一轮请求消耗</span><span class="mono">100 RPM</span></div>
+              <div class="kpi-val mono" id="kpi-budget">16 / 30,000</div>
+              <div class="kpi-foot">含日历依赖与重试 · 预算余量充足 (99.9%)</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">
+                <span>中间文件存储管理</span>
+                <button class="btn btn-sm" style="padding:1px 7px; font-size:11px;" onclick="openModal('storageModal')">配置策略</button>
+              </div>
+              <div class="kpi-val tabular">保留全部 Raw</div>
+              <div class="kpi-foot">自动释放未启用 · 默认安全保留期 7 天</div>
+            </div>
+          </div>
+
+          <!-- Collapsible Data Contract Bar (Replaces Wall of Text!) -->
+          <div class="contract-strip" id="contractStrip">
+            <div class="contract-head">
+              <div class="contract-tags">
+                <span class="badge badge-neutral">安全契约</span>
+                <span class="contract-tag">✓ 默认保存不联网，启用须显式授权</span>
+                <span class="contract-tag">✓ 绑定全声明字段落盘</span>
+                <span class="contract-tag">✓ Parquet 写后回读 SHA256 对账</span>
+              </div>
+              <button class="btn btn-sm" onclick="document.getElementById('contractStrip').classList.toggle('open')">
+                查看完整边界说明 ▾
+              </button>
+            </div>
+            <div class="contract-detail">
+              <div><strong>范围与基准：</strong>按上交所 (SSE) 交易日历规划单交易日全市场返回记录，不推断历史股票池完整性，也不代表供应商当日已发布完毕。</div>
+              <div><strong>预算与中断恢复：</strong>每次请求发送前在 SQLite 原子登记预算，重启不归零；中断后保留已成功切片续跑，触顶或权限异常立即阻断等待核查。</div>
+              <div><strong>不可变快照：</strong>新数据回读校验通过前绝不替换旧快照；缩小需求范围或暂停维护不会自动删除已有仓库或原始归档。</div>
+            </div>
+          </div>
+
+          <!-- Section Header -->
+          <div class="section-head">
+            <div>
+              <div class="section-title">长期托管数据需求</div>
+              <div class="section-sub">声明研究核心日频表范围，系统在空闲时自动推进「日历依赖 → 规划 → 采集 → 校验入仓」闭环</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn" onclick="openModal('storageModal')">存储管理 (Raw 释放)</button>
+              <button class="btn btn-primary" onclick="openDrawer('needDrawer')">+ 新增数据需求</button>
+            </div>
+          </div>
+
+          <!-- Active Need Pipeline Card -->
+          <div class="card need-card">
+            <div class="need-header">
+              <div>
+                <div class="need-title-row">
+                  <span class="need-title" id="need-card-title">日常研究数据</span>
+                  <span class="badge badge-ok" id="need-status-badge">● 自动维护已授权</span>
+                  <span class="badge badge-neutral mono">Rev #3</span>
+                </div>
+                <div class="need-meta">
+                  <span>范围：<strong class="mono">2020-01-01</strong> → <strong>滚动至上海时间昨日 (2026-11-16)</strong></span>
+                  <span>·</span>
+                  <span>近期修订回查：<strong class="mono">7</strong> 自然日</span>
+                  <span>·</span>
+                  <span>下次调度：<strong class="mono">今日 20:00</strong></span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm" onclick="openDrawer('needDrawer')">修改配置</button>
+                <button class="btn btn-sm" onclick="showToast('已暂停自动维护，不会删除任何已入库数据')">暂停维护</button>
+                <button class="btn btn-sm btn-primary" onclick="toggleSyncConfirm(true)">立即同步</button>
+              </div>
+            </div>
+
+            <!-- Two-step Explicit Network Authorization Banner -->
+            <div class="auth-banner" id="syncAuthBanner">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="chkSyncAuth" onchange="document.getElementById('btnConfirmSync').disabled = !this.checked" />
+                <span>我明确授权本轮最多 <strong>30,000</strong> 次 Tushare 联网请求（含交易日历依赖与重试），校验通过后原子发布新快照。</span>
+              </label>
+              <div style="display:flex; gap:8px; flex-shrink:0;">
+                <button class="btn btn-sm" onclick="toggleSyncConfirm(false)">取消</button>
+                <button class="btn btn-sm btn-primary" id="btnConfirmSync" disabled onclick="simulateSyncPipeline()">确认联网同步</button>
+              </div>
+            </div>
+
+            <!-- 4-Step Pipeline Visualization -->
+            <div class="pipeline-box">
+              <div class="pipeline-top">
+                <span id="pipeline-summary"><strong>最近一轮闭环已完成</strong> · 2026-11-17 09:16 结束（耗时 37s）</span>
+                <span class="mono" id="pipeline-req-meter">已登记请求：16 / 30,000 次 · 0 失败</span>
+              </div>
+              <div class="stepper" id="pipelineStepper">
+                <div class="step-item" data-step="0">
+                  <div class="step-num">✓</div>
+                  <div>
+                    <div class="step-name">1. 交易日历依赖</div>
+                    <div class="step-sub">trade_cal · 基准就绪</div>
+                  </div>
+                </div>
+                <div class="step-item" data-step="1">
+                  <div class="step-num">✓</div>
+                  <div>
+                    <div class="step-name">2. 差异与回查规划</div>
+                    <div class="step-sub">目标截至 2026-11-16</div>
+                  </div>
+                </div>
+                <div class="step-item" data-step="2">
+                  <div class="step-num">✓</div>
+                  <div>
+                    <div class="step-name">3. 并发切片采集</div>
+                    <div class="step-sub">3 接口 · 16 次请求成功</div>
+                  </div>
+                </div>
+                <div class="step-item" data-step="3">
+                  <div class="step-num">✓</div>
+                  <div>
+                    <div class="step-name">4. 回读校验与发布</div>
+                    <div class="step-sub">SHA256 全字段核验通过</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 Managed Dataset Asset Cards -->
+            <div class="managed-grid">
+              <div class="ds-asset-card">
+                <div class="ds-asset-top">
+                  <div>
+                    <div class="ds-asset-name">日线行情</div>
+                    <div class="ds-asset-code mono">daily · 13 声明字段</div>
+                  </div>
+                  <span class="badge badge-ok">已发布可查</span>
+                </div>
+                <div class="ds-metrics">
+                  <div>
+                    <div class="ds-metric-k">仓库总行数</div>
+                    <div class="ds-metric-v mono">18,446,886</div>
+                  </div>
+                  <div>
+                    <div class="ds-metric-k">实际记录截至</div>
+                    <div class="ds-metric-v mono">2026-11-16</div>
+                  </div>
+                </div>
+                <div class="ds-asset-foot">
+                  <span style="color:var(--text-muted)">✓ 写后回读摘要已核验</span>
+                  <button class="btn btn-sm btn-soft" onclick="jumpToWarehouse('daily')">查宽表 / 导出 →</button>
+                </div>
+              </div>
+
+              <div class="ds-asset-card">
+                <div class="ds-asset-top">
+                  <div>
+                    <div class="ds-asset-name">每日指标</div>
+                    <div class="ds-asset-code mono">daily_basic · 18 声明字段</div>
+                  </div>
+                  <span class="badge badge-ok">已发布可查</span>
+                </div>
+                <div class="ds-metrics">
+                  <div>
+                    <div class="ds-metric-k">仓库总行数</div>
+                    <div class="ds-metric-v mono">18,355,752</div>
+                  </div>
+                  <div>
+                    <div class="ds-metric-k">实际记录截至</div>
+                    <div class="ds-metric-v mono">2026-11-16</div>
+                  </div>
+                </div>
+                <div class="ds-asset-foot">
+                  <span style="color:var(--text-muted)">✓ PE/PB/换手/市值全列</span>
+                  <button class="btn btn-sm btn-soft" onclick="jumpToWarehouse('daily_basic')">查宽表 / 导出 →</button>
+                </div>
+              </div>
+
+              <div class="ds-asset-card">
+                <div class="ds-asset-top">
+                  <div>
+                    <div class="ds-asset-name">复权因子</div>
+                    <div class="ds-asset-code mono">adj_factor · 3 声明字段</div>
+                  </div>
+                  <span class="badge badge-ok">已发布可查</span>
+                </div>
+                <div class="ds-metrics">
+                  <div>
+                    <div class="ds-metric-k">仓库总行数</div>
+                    <div class="ds-metric-v mono">19,250,818</div>
+                  </div>
+                  <div>
+                    <div class="ds-metric-k">实际记录截至</div>
+                    <div class="ds-metric-v mono">2026-11-16</div>
+                  </div>
+                </div>
+                <div class="ds-asset-foot">
+                  <span style="color:var(--text-muted)">✓ 8,764 交易日无断档</span>
+                  <button class="btn btn-sm btn-soft" onclick="jumpToWarehouse('adj_factor')">查宽表 / 导出 →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bridge Section: Connecting Managed Needs with the other 99 Preset Datasets! -->
+          <div class="section-head" style="margin-top: 4px;">
+            <div>
+              <div class="section-title">扩展研究数据集 · 按需采集与标准仓</div>
+              <div class="section-sub">除上述 3 张自动托管表外，其余 99 个接口支持按需增量采集与离线入仓（解决原界面路径割裂问题）</div>
+            </div>
+            <button class="btn btn-sm" onclick="switchView('datasets')">浏览全部 102 个股票接口 →</button>
+          </div>
+
+          <div class="bridge-grid">
+            <div class="card bridge-card">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>个股资金流向</strong>
+                  <span class="badge badge-warn">可更新</span>
+                </div>
+                <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:2px;">moneyflow · 14,242,087 行</div>
+                <div style="font-size:11.5px; color:var(--text-secondary); margin-top:6px;">记录截至 <span class="mono">2026-11-13</span>（较最新交易日差 1 日）</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm" style="flex:1" onclick="jumpToWarehouse('moneyflow')">浏览数据</button>
+                <button class="btn btn-sm btn-soft" style="flex:1" onclick="showToast('已打开 moneyflow 增量补采规划 (2026-11-14 ~ 11-16)')">增量补采</button>
+              </div>
+            </div>
+
+            <div class="card bridge-card">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>股票基础列表</strong>
+                  <span class="badge badge-ok">当前快照</span>
+                </div>
+                <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:2px;">stock_basic · 5,928 行</div>
+                <div style="font-size:11.5px; color:var(--text-secondary); margin-top:6px;">沪深北 L / D / P 全状态快照（15 分区）</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm btn-soft" style="width:100%" onclick="jumpToWarehouse('stock_basic')">查宽表 / 导出 →</button>
+              </div>
+            </div>
+
+            <div class="card bridge-card">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>利润表 (PIT 公告)</strong>
+                  <span class="badge badge-neutral">未采集</span>
+                </div>
+                <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:2px;">income · 请求分区引擎</div>
+                <div style="font-size:11.5px; color:var(--text-secondary); margin-top:6px;">按报告期 / 股票池规划采集，支持多公告保留</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm" style="width:100%" onclick="switchView('datasets')">首次采集规划 →</button>
+              </div>
+            </div>
+
+            <div class="card bridge-card">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong>财务指标数据</strong>
+                  <span class="badge badge-neutral">未采集</span>
+                </div>
+                <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:2px;">fina_indicator · 108 字段</div>
+                <div style="font-size:11.5px; color:var(--text-secondary); margin-top:6px;">ROE / 毛利率 / 同比增速，8000 积分可用</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm" style="width:100%" onclick="switchView('datasets')">首次采集规划 →</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW 2: 数据浏览 (IDE Split-Pane) ==================== -->
+        <section id="view-warehouse" class="warehouse-split hidden">
+          <!-- Left Domain & Table Tree -->
+          <div class="wh-tree">
+            <div class="wh-tree-top">
+              <input class="input" id="whTreeSearch" placeholder="搜索表名或 API (如 daily)…" oninput="renderWarehouseTree()" />
+              <div class="seg-tabs">
+                <button class="seg-btn active" data-wh-scope="all" onclick="setWhScope('all', this)">全部 (81)</button>
+                <button class="seg-btn" data-wh-scope="ready" onclick="setWhScope('ready', this)">已建仓 (4)</button>
+                <button class="seg-btn" data-wh-scope="empty" onclick="setWhScope('empty', this)">待采集</button>
+              </div>
+            </div>
+            <div class="wh-tree-list" id="whTreeList"></div>
+          </div>
+
+          <!-- Right Full-Height Data Grid -->
+          <div class="wh-main">
+            <div class="wh-header-bar">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <strong style="font-size:14.5px;" id="whActiveTitle">日线行情</strong>
+                <span class="badge badge-neutral mono" id="whActiveCode">daily</span>
+                <span class="badge badge-ok" id="whActiveBadge">● 快照就绪</span>
+                <span style="font-size:12px; color:var(--text-secondary);" id="whActiveStats">
+                  18,446,886 行 · 8,764 交易日 (1990-12-19 ~ 2026-11-16) · 快照 <code class="mono">6021bb63…</code>
+                </span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm" onclick="showToast('正在离线核验 SHA256 清单并检查新增归档（零网络请求）…')">离线整理更新</button>
+                <button class="btn btn-sm btn-primary" onclick="openModal('exportModal')">裁剪导出 Bundle</button>
+              </div>
+            </div>
+
+            <div class="wh-filter-bar">
+              <div class="filter-group">
+                <input class="input mono" id="whFilterCode" style="width:155px;" placeholder="代码 如 000001.SZ" onkeydown="if(event.key==='Enter') loadWarehouseRows()" />
+                <input class="input mono" id="whFilterStart" style="width:112px;" value="20261116" placeholder="起始 YYYYMMDD" />
+                <span style="color:var(--text-muted)">–</span>
+                <input class="input mono" id="whFilterEnd" style="width:112px;" value="20261116" placeholder="截止 YYYYMMDD" />
+                <button class="btn btn-sm btn-soft" onclick="loadWarehouseRows()">查询</button>
+                <button class="quick-pill active" onclick="applyQuickDate('20261116','20261116', this)">最新日</button>
+                <button class="quick-pill" onclick="applyQuickDate('20261016','20261116', this)">近 1 月</button>
+                <button class="quick-pill" onclick="applyQuickDate('20260101','20261116', this)">2026 年内</button>
+                <button class="quick-pill" onclick="applyQuickDate('','', this)">全历史</button>
+              </div>
+              <div class="filter-group">
+                <button class="quick-pill active" id="btnColPreset" onclick="toggleCompactCols()">列预设：核心字段</button>
+                <button class="quick-pill" id="btnColorToggle" onclick="toggleNumberColors()">涨跌着色：开</button>
+              </div>
+            </div>
+
+            <div class="grid-wrap" id="whGridWrap">
+              <table class="data-grid" id="whTable">
+                <thead id="whThead"></thead>
+                <tbody id="whTbody"></tbody>
+              </table>
+            </div>
+
+            <div class="wh-footer">
+              <span id="whFooterInfo">点击任意数据行可在右侧查看完整字段、Arrow 类型与月度 Parquet 分区血缘</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="mono" id="whPageLabel">第 1 页 · 每页 25 行</span>
+                <button class="btn btn-sm" onclick="changeWhPage(-1)">上一页</button>
+                <button class="btn btn-sm" onclick="changeWhPage(1)">下一页</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW 3: 运行记录 ==================== -->
+        <section id="view-runs" class="page-pad hidden">
+          <div class="card" style="padding: 16px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div>
+                <div style="font-size:14px; font-weight:650;">单进程协调器 · 16 并发采集工作线程</div>
+                <div style="font-size:12px; color:var(--text-muted);">全局令牌桶速率上限 <strong class="mono">500 RPM</strong> · 当前活跃线程 <strong class="mono" id="busyThreadCount">0 / 16</strong></div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm" onclick="simulateWorkerBurst()">模拟并发切片执行</button>
+                <button class="btn btn-sm" onclick="toggleLogDock()">展开底部实时切片日志</button>
+              </div>
+            </div>
+            <div class="thread-bar" id="threadSlots"></div>
+          </div>
+
+          <div class="section-head">
+            <div>
+              <div class="section-title">结构化异常诊断与安全恢复（不盲目重试未知错误）</div>
+              <div class="section-sub">区分「行数触顶截断」「网络暂错」「积分/独立权限门槛」，各自提供确定性修复动作</div>
+            </div>
+          </div>
+
+          <div class="recovery-grid">
+            <div class="card recovery-card">
+              <div style="display:flex; justify-content:space-between;"><span class="badge badge-warn">疑似触顶截断</span><span class="mono" style="font-size:11px; color:var(--text-muted)">income · 报告期切片</span></div>
+              <div style="font-size:12.5px; font-weight:600;">单次返回达到目录上限 5,000 行，已拒绝静默入仓</div>
+              <div style="font-size:11.5px; color:var(--text-secondary);">保留可读 Raw 切片供核查，建议切换为按股票池拆分子切片重新采集。</div>
+              <div><button class="btn btn-sm btn-soft" onclick="showToast('已打开拆分向导：自动按 stock_basic 拆分为单股窗口切片')">按股票池拆分重采 →</button></div>
+            </div>
+
+            <div class="card recovery-card">
+              <div style="display:flex; justify-content:space-between;"><span class="badge badge-warn">网络暂时性超时</span><span class="mono" style="font-size:11px; color:var(--text-muted)">moneyflow · 3/42 切片未完</span></div>
+              <div style="font-size:12.5px; font-weight:600;">SDK ReadTimeout（3 次自动重试耗尽）</div>
+              <div style="font-size:11.5px; color:var(--text-secondary);">前 39 个成功切片已持久化校验，断点续跑仅补采剩余 3 个交易日。</div>
+              <div><button class="btn btn-sm btn-primary" onclick="showToast('已发起断点续跑：复用 39 个成功切片，仅请求剩余 3 个切片')">断点续跑未完成切片</button></div>
+            </div>
+
+            <div class="card recovery-card err">
+              <div style="display:flex; justify-content:space-between;"><span class="badge badge-err">独立授权门槛</span><span class="mono" style="font-size:11px; color:var(--text-muted)">stk_mins · 历史分钟线</span></div>
+              <div style="font-size:12.5px; font-weight:600;">接口需单独开通分钟权限（与 8000 积分分档独立）</div>
+              <div style="font-size:11.5px; color:var(--text-secondary);">已自动阻断重试以防浪费配额，可查看官方文档证据链接。</div>
+              <div><button class="btn btn-sm" onclick="showToast('官方文档核验：分钟行情需单独权限，普通积分不自动解锁')">查看权限证据</button></div>
+            </div>
+          </div>
+
+          <div class="card" style="overflow:hidden;">
+            <div style="padding:12px 16px; border-bottom:1px solid var(--border-subtle); font-weight:600;">最近执行历史（来自 :7110 真实运行台账）</div>
+            <table class="data-grid">
+              <thead>
+                <tr>
+                  <th>运行 ID</th>
+                  <th>任务名称</th>
+                  <th>接口</th>
+                  <th>状态与结果口径</th>
+                  <th class="num">请求切片</th>
+                  <th>完成时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">05da5bcd</td>
+                  <td>复权因子 · 增量更新 · 2026-11-16</td>
+                  <td class="mono">adj_factor</td>
+                  <td><span class="badge badge-ok">请求成功 · 有记录</span></td>
+                  <td class="num mono">7 / 7</td>
+                  <td class="mono">2026-11-17 09:16</td>
+                  <td><button class="btn btn-sm" onclick="jumpToWarehouse('adj_factor')">查看仓库</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">87b916ed</td>
+                  <td>每日指标 · 增量更新 · 2026-11-16</td>
+                  <td class="mono">daily_basic</td>
+                  <td><span class="badge badge-ok">请求成功 · 有记录</span></td>
+                  <td class="num mono">7 / 7</td>
+                  <td class="mono">2026-11-17 09:16</td>
+                  <td><button class="btn btn-sm" onclick="jumpToWarehouse('daily_basic')">查看仓库</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">0ffd2b43</td>
+                  <td>日线行情 · 增量更新 · 2026-11-16</td>
+                  <td class="mono">daily</td>
+                  <td><span class="badge badge-ok">请求成功 · 有记录</span></td>
+                  <td class="num mono">1 / 1</td>
+                  <td class="mono">2026-11-17 09:15</td>
+                  <td><button class="btn btn-sm" onclick="jumpToWarehouse('daily')">查看仓库</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">0a296f87</td>
+                  <td>交易日历 · 规划依赖检查</td>
+                  <td class="mono">trade_cal</td>
+                  <td><span class="badge badge-ok">依赖已准备</span></td>
+                  <td class="num mono">1 / 1</td>
+                  <td class="mono">2026-11-17 09:15</td>
+                  <td><button class="btn btn-sm" onclick="showToast('SSE 交易日历分区校验正常')">切片明细</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ==================== VIEW 4: 102 接口预置采集目录 ==================== -->
+        <section id="view-datasets" class="page-pad hidden">
+          <div class="section-head">
+            <div>
+              <div class="section-title">股票数据目录（8 大官方分类 · 102 个接口入口）</div>
+              <div class="section-sub">每个接口均标注明确的全量/更新规则、8000 积分账户可用性与标准仓支持状态</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm" onclick="openModal('quickQueryModal')">查询一次（先检查再请求）</button>
+              <button class="btn btn-sm btn-primary" onclick="showToast('支持跨分类勾选多个数据集，一键生成组合采集计划')">批量组合规划</button>
+            </div>
+          </div>
+
+          <div class="card" style="overflow:hidden;">
+            <table class="data-grid">
+              <thead>
+                <tr>
+                  <th>数据集 / API</th>
+                  <th>官方分类</th>
+                  <th>采集与历史规则边界</th>
+                  <th>8000分权限核定</th>
+                  <th>本地状态</th>
+                  <th>当前推荐动作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>日线行情</strong> <span class="mono" style="color:var(--text-muted)">daily</span></td>
+                  <td>行情数据</td>
+                  <td>按交易日全市场截面 · 支持月度标准仓</td>
+                  <td><span class="badge badge-ok">2000分满足 · 500 RPM</span></td>
+                  <td><span class="badge badge-ok">已由「我的数据」托管</span></td>
+                  <td><button class="btn btn-sm btn-soft" onclick="jumpToWarehouse('daily')">去查表 →</button></td>
+                </tr>
+                <tr>
+                  <td><strong>个股资金流向</strong> <span class="mono" style="color:var(--text-muted)">moneyflow</span></td>
+                  <td>资金流向数据</td>
+                  <td>按交易日截面 · 支持月度标准仓</td>
+                  <td><span class="badge badge-ok">2000分满足 · 200 RPM</span></td>
+                  <td><span class="badge badge-warn">截至 2026-11-13</span></td>
+                  <td><button class="btn btn-sm btn-primary" onclick="showToast('已生成 moneyflow 增量计划：待补 2026-11-16 共 1 个交易日')">检查更新</button></td>
+                </tr>
+                <tr>
+                  <td><strong>股票列表</strong> <span class="mono" style="color:var(--text-muted)">stock_basic</span></td>
+                  <td>基础数据</td>
+                  <td>仅当前状态快照（不重建历史退市时点股票池）</td>
+                  <td><span class="badge badge-ok">2000分满足 · 50 RPM</span></td>
+                  <td><span class="badge badge-ok">5,928 行已入仓</span></td>
+                  <td><button class="btn btn-sm" onclick="jumpToWarehouse('stock_basic')">浏览快照</button></td>
+                </tr>
+                <tr>
+                  <td><strong>利润表</strong> <span class="mono" style="color:var(--text-muted)">income</span></td>
+                  <td>财务数据</td>
+                  <td>按报告期 / 股票池分区 · 保留多次修订公告记录</td>
+                  <td><span class="badge badge-ok">2000分满足 · 200 RPM</span></td>
+                  <td><span class="badge badge-neutral">未采集</span></td>
+                  <td><button class="btn btn-sm" onclick="showToast('已打开 income 首次采集规划抽屉')">首次采集</button></td>
+                </tr>
+                <tr>
+                  <td><strong>开盘竞价成交</strong> <span class="mono" style="color:var(--text-muted)">stk_auction_o</span></td>
+                  <td>打板专题数据</td>
+                  <td>按交易日截面 · 需单独核对开通权限</td>
+                  <td><span class="badge badge-warn">独立权限接口</span></td>
+                  <td><span class="badge badge-neutral">未采集</span></td>
+                  <td><button class="btn btn-sm" onclick="openModal('quickQueryModal')">单次验证权限</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Bottom Collapsible Live Log Dock -->
+      <div class="log-dock" id="logDock">
+        <div class="log-dock-head">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="dot dot-ok"></span>
+            <strong class="mono">实时采集事件流 (/api/activity)</strong>
+            <span style="color:#64748b">seq #93789 · 16 Workers Online</span>
+          </div>
+          <button style="color:#94a3b8; font-size:11.5px;" onclick="toggleLogDock()">收起面板 ✕</button>
+        </div>
+        <div class="log-stream mono" id="logStream">
+          <div class="log-line"><span class="log-ts">09:16:19.416</span><span class="log-tag">[need_job]</span><span>需求「日常研究数据」启动新一轮同步规划，预算上限 30,000 次</span></div>
+          <div class="log-line"><span class="log-ts">09:16:21.104</span><span class="log-tag">[trade_cal]</span><span>上交所基准交易日历核验完成，目标截止交易日 2026-11-16</span></div>
+          <div class="log-line"><span class="log-ts">09:16:34.812</span><span class="log-tag">[daily]</span><span>切片 trade_date=20261116 写入完成 (5,386 行)，写后回读 SHA256 一致</span></div>
+          <div class="log-line"><span class="log-ts">09:16:48.290</span><span class="log-tag">[daily_basic]</span><span>原子发布新快照 · 累计 18,355,752 行可离线查询</span></div>
+          <div class="log-line"><span class="log-ts">09:16:56.360</span><span class="log-tag">[adj_factor]</span><span>原子发布新快照 · 累计 19,250,818 行 · 本轮共消耗 16 次请求</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Slide-Over Drawer 1: Row Detail & Lineage ==================== -->
+  <div class="backdrop" id="rowDrawer" onclick="if(event.target===this) closeOverlay('rowDrawer')">
+    <div class="drawer">
+      <div class="drawer-head">
+        <div>
+          <div style="font-size:14px; font-weight:650;" id="rowDrawerTitle">单行记录与存储血缘</div>
+          <div style="font-size:11.5px; color:var(--text-muted);" id="rowDrawerSub">月度不可变快照直读</div>
+        </div>
+        <button class="btn btn-sm" onclick="closeOverlay('rowDrawer')">关闭 ✕</button>
+      </div>
+      <div class="drawer-body" id="rowDrawerBody"></div>
+    </div>
+  </div>
+
+  <!-- ==================== Slide-Over Drawer 2: Create/Edit Data Need ==================== -->
+  <div class="backdrop" id="needDrawer" onclick="if(event.target===this) closeOverlay('needDrawer')">
+    <div class="drawer">
+      <div class="drawer-head">
+        <div>
+          <div style="font-size:14.5px; font-weight:650;">配置长期数据需求</div>
+          <div style="font-size:11.5px; color:var(--text-muted);">改用右侧抽屉配置，避免原界面大表单把列表挤出首屏</div>
+        </div>
+        <button class="btn btn-sm" onclick="closeOverlay('needDrawer')">关闭 ✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="form-row">
+          <label class="form-label">需求名称</label>
+          <input class="input" value="日常研究数据" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">托管数据集（全声明字段绑定）</label>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; padding:8px 10px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm);">
+            <label><input type="checkbox" checked /> 日线行情 (daily)</label>
+            <label><input type="checkbox" checked /> 每日指标 (daily_basic)</label>
+            <label><input type="checkbox" checked /> 复权因子 (adj_factor)</label>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-row">
+            <label class="form-label">历史起点</label>
+            <input class="input mono" type="date" value="2020-01-01" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">固定截止日（留空滚动至昨日）</label>
+            <input class="input mono" type="date" value="" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+          <div class="form-row">
+            <label class="form-label">每日调度 (北京时间)</label>
+            <input class="input mono" type="number" value="20" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">回查窗口 (日)</label>
+            <input class="input mono" type="number" value="7" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">单轮请求上限</label>
+            <input class="input mono" type="number" value="30000" />
+          </div>
+        </div>
+        <div class="card" style="padding:12px; background:var(--bg-subtle); font-size:12px;">
+          <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer;">
+            <input type="checkbox" checked style="margin-top:3px;" />
+            <span><strong>启用每日自动维护并授权联网</strong><br><span style="color:var(--text-muted); font-size:11.5px;">取消勾选则「仅保存需求不联网」。服务关闭期间不执行，恢复后自动合并错过的调度。</span></span>
+          </label>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn" onclick="closeOverlay('needDrawer')">取消</button>
+        <button class="btn btn-primary" onclick="closeOverlay('needDrawer'); showToast('需求配置已保存（演示模式未改动 :7110 数据库）')">保存并授权启用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Modal 1: Storage Management ==================== -->
+  <div class="backdrop modal-center" id="storageModal" onclick="if(event.target===this) closeOverlay('storageModal')">
+    <div class="modal-box">
+      <div class="drawer-head">
+        <div>
+          <div style="font-size:14.5px; font-weight:650;">存储管理 · 中间原始文件 (Raw) 安全释放</div>
+          <div style="font-size:11.5px; color:var(--text-muted);">绝不删除标准仓 Parquet 快照、导出副本或交易日历规划依赖</div>
+        </div>
+        <button class="btn btn-sm" onclick="closeOverlay('storageModal')">关闭 ✕</button>
+      </div>
+      <div class="drawer-body">
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;">
+          <div class="card" style="padding:10px; background:var(--bg-subtle);">
+            <div style="font-size:11px; color:var(--text-muted);">释放前置条件 1</div>
+            <div style="font-weight:600; font-size:12px; margin-top:2px;">✓ 当前已发布快照登记</div>
+          </div>
+          <div class="card" style="padding:10px; background:var(--bg-subtle);">
+            <div style="font-size:11px; color:var(--text-muted);">释放前置条件 2</div>
+            <div style="font-weight:600; font-size:12px; margin-top:2px;">✓ preserved_fields 证明</div>
+          </div>
+          <div class="card" style="padding:10px; background:var(--bg-subtle);">
+            <div style="font-size:11px; color:var(--text-muted);">释放前置条件 3</div>
+            <div style="font-weight:600; font-size:12px; margin-top:2px;">✓ 写后回读 SHA256 对账</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+          <div class="form-row">
+            <label class="form-label">保留最近归档天数</label>
+            <input class="input mono" type="number" value="7" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">每日空闲检查时间</label>
+            <input class="input mono" value="03:00 (北京时间)" readonly />
+          </div>
+          <div class="form-row">
+            <label class="form-label">校验深度</label>
+            <select class="input"><option>快速检查 (元数据+血缘)</option><option>深度检查 (重算全量哈希)</option></select>
+          </div>
+        </div>
+        <div class="card" style="padding:12px; border-color:var(--warn-border); background:var(--warn-bg); color:var(--warn-text); font-size:12px;">
+          <label style="display:flex; gap:8px; cursor:pointer;">
+            <input type="checkbox" />
+            <span>我已知晓释放后原始响应切片不可撤销恢复，授权按保留期自动释放满足全部三项安全证明的中间文件。</span>
+          </label>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn" onclick="showToast('已完成离线预览扫描：共 0 个超期可释放文件')">手动扫描预览</button>
+        <button class="btn btn-primary" onclick="closeOverlay('storageModal'); showToast('存储策略已保存（演示模式）')">保存存储策略</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Modal 2: Export Bundle ==================== -->
+  <div class="backdrop modal-center" id="exportModal" onclick="if(event.target===this) closeOverlay('exportModal')">
+    <div class="modal-box" style="width:520px;">
+      <div class="drawer-head">
+        <div style="font-size:14.5px; font-weight:650;">按需字段裁剪与导出 Bundle</div>
+        <button class="btn btn-sm" onclick="closeOverlay('exportModal')">关闭 ✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="form-row">
+          <label class="form-label">导出格式与组织方式</label>
+          <select class="input">
+            <option>Parquet 标准文件包 (保留 Arrow 严格类型 + 清单 JSON)</option>
+            <option>CSV 宽表文件 (UTF-8 兼容 Excel / Pandas)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">目标目录</label>
+          <input class="input mono" value="/absolute/path/tushare-data/exports" />
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary);">
+          当前将沿用数据浏览页的筛选条件与已选列预设，全程离线从快照导出，不消耗 Tushare 配额。
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn" onclick="closeOverlay('exportModal')">取消</button>
+        <button class="btn btn-primary" onclick="closeOverlay('exportModal'); showToast('离线裁剪导出完成：已生成 Parquet Bundle 与 manifest.json')">立即离线导出</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Modal 3: Single Quick Query ==================== -->
+  <div class="backdrop modal-center" id="quickQueryModal" onclick="if(event.target===this) closeOverlay('quickQueryModal')">
+    <div class="modal-box">
+      <div class="drawer-head">
+        <div>
+          <div style="font-size:14.5px; font-weight:650;">单次即时 API 查询（先离线检查 · 确认后请求一次）</div>
+          <div style="font-size:11.5px; color:var(--text-muted);">结果自动归档为 Parquet 并直接打开本地分页预览，翻页不重发请求</div>
+        </div>
+        <button class="btn btn-sm" onclick="closeOverlay('quickQueryModal')">关闭 ✕</button>
+      </div>
+      <div class="drawer-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-row">
+            <label class="form-label">Tushare 分类</label>
+            <select class="input"><option>行情数据</option><option>财务数据</option><option>资金流向数据</option><option>打板专题数据</option></select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">具体接口</label>
+            <select class="input mono"><option>daily · 日线行情</option><option>moneyflow · 个股资金流</option><option>top_list · 龙虎榜每日明细</option></select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-row">
+            <label class="form-label">ts_code (建议限制单股)</label>
+            <input class="input mono" value="600519.SH" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">trade_date</label>
+            <input class="input mono" value="20261116" />
+          </div>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button class="btn" onclick="showToast('请求参数与字段契约校验通过：预计发送 1 次 SDK 请求')">1. 检查请求参数</button>
+        <button class="btn btn-primary" onclick="closeOverlay('quickQueryModal'); jumpToWarehouse('daily'); showToast('已定位至本地结果表格预览')">2. 确认查询并看表</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Modal 4: Cmd+K Quick Jump ==================== -->
+  <div class="backdrop modal-center" id="cmdModal" onclick="if(event.target===this) closeOverlay('cmdModal')">
+    <div class="modal-box" style="width:500px;">
+      <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle);">
+        <input class="input" id="cmdInput" placeholder="输入接口名 (如 daily / moneyflow / income) 或页面跳转…" oninput="renderCmdList()" />
+      </div>
+      <div id="cmdList" style="padding:8px; max-height:300px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- ==================== Interactive Logic & Live :7110 Read-Only Adapter ==================== -->
+  <script>
+    // Authentic Snapshot Catalog & Real Sample Data from :7110
+    const WAREHOUSE_GROUPS = [
+      {
+        domain: "量价与复权 (托管核心)",
+        items: [
+          { id: "daily", name: "日线行情", state: "ready", rows: 18446886, shortRows: "18.4M", span: "1990-12-19 ~ 2026-11-16", days: 8764, snap: "6021bb63634a" },
+          { id: "daily_basic", name: "每日指标", state: "ready", rows: 18355752, shortRows: "18.3M", span: "1990-12-19 ~ 2026-11-16", days: 8764, snap: "91ac42ef108b" },
+          { id: "adj_factor", name: "复权因子", state: "ready", rows: 19250818, shortRows: "19.2M", span: "1990-12-19 ~ 2026-11-16", days: 8764, snap: "d409e812fa31" },
+          { id: "weekly", name: "周线行情", state: "empty", rows: 0, shortRows: "未采集", span: "支持周期 K 线仓", days: 0, snap: "—" },
+        ]
+      },
+      {
+        domain: "资金流与北向",
+        items: [
+          { id: "moneyflow", name: "个股资金流向", state: "ready", rows: 14242087, shortRows: "14.2M", span: "2010-01-04 ~ 2026-11-13", days: 4094, snap: "3f88c920ab12" },
+          { id: "hsgt_top10", name: "沪深股通十大成交", state: "empty", rows: 0, shortRows: "未采集", span: "支持日期截面仓", days: 0, snap: "—" },
+        ]
+      },
+      {
+        domain: "标的与交易基准",
+        items: [
+          { id: "stock_basic", name: "股票基础列表", state: "ready", rows: 5928, shortRows: "5,928", span: "当前完整快照 (15切片)", days: 1, snap: "78b120ef4490" },
+          { id: "trade_cal", name: "各大交易所日历", state: "ready", rows: 13149, shortRows: "13.1K", span: "年度日历分区", days: 0, snap: "cal_sse_2026" },
+        ]
+      },
+      {
+        domain: "财报与业绩 (PIT)",
+        items: [
+          { id: "income", name: "利润表", state: "empty", rows: 0, shortRows: "未采集", span: "请求分区引擎", days: 0, snap: "—" },
+          { id: "balancesheet", name: "资产负债表", state: "empty", rows: 0, shortRows: "未采集", span: "请求分区引擎", days: 0, snap: "—" },
+          { id: "fina_indicator", name: "财务指标数据", state: "empty", rows: 0, shortRows: "未采集", span: "请求分区引擎", days: 0, snap: "—" },
+        ]
+      }
+    ];
+
+    const FIELD_META = {
+      ts_code: { cn: "股票代码", dtype: "string", num: false },
+      trade_date: { cn: "交易日期", dtype: "string", num: false },
+      open: { cn: "开盘价", dtype: "Float64", num: true },
+      high: { cn: "最高价", dtype: "Float64", num: true },
+      low: { cn: "最低价", dtype: "Float64", num: true },
+      close: { cn: "收盘价", dtype: "Float64", num: true },
+      pre_close: { cn: "昨收价", dtype: "Float64", num: true },
+      change: { cn: "涨跌额", dtype: "Float64", num: true, signed: true },
+      pct_chg: { cn: "涨跌幅 (%)", dtype: "Float64", num: true, signed: true },
+      vol: { cn: "成交量 (手)", dtype: "Float64", num: true },
+      amount: { cn: "成交额 (千元)", dtype: "Float64", num: true },
+      ah_vol: { cn: "盘后成交量", dtype: "Float64", num: true, extra: true },
+      ah_amount: { cn: "盘后成交额", dtype: "Float64", num: true, extra: true },
+      adj_factor: { cn: "复权因子", dtype: "Float64", num: true },
+      turnover_rate: { cn: "换手率 (%)", dtype: "Float64", num: true },
+      pe_ttm: { cn: "市盈率 TTM", dtype: "Float64", num: true },
+      pb: { cn: "市净率 PB", dtype: "Float64", num: true },
+      total_mv: { cn: "总市值 (万元)", dtype: "Float64", num: true },
+      name: { cn: "股票名称", dtype: "string", num: false },
+      area: { cn: "地域", dtype: "string", num: false },
+      industry: { cn: "所属行业", dtype: "string", num: false },
+      list_date: { cn: "上市日期", dtype: "string", num: false },
+      buy_sm_amount: { cn: "小单买入(万)", dtype: "Float64", num: true },
+      buy_lg_amount: { cn: "大单买入(万)", dtype: "Float64", num: true },
+      net_mf_amount: { cn: "净流入额(万)", dtype: "Float64", num: true, signed: true }
+    };
+
+    // Real sample rows captured directly from 127.0.0.1:7110
+    const FALLBACK_TABLES = {
+      daily: {
+        columns: ["ts_code", "trade_date", "open", "high", "low", "close", "pre_close", "change", "pct_chg", "vol", "amount", "ah_vol", "ah_amount"],
+        rows: [
+          ["000001.SZ", "20261116", 12.06, 12.30, 12.05, 12.30, 12.07, 0.23, 1.9056, 2170129.66, 2645742.57, 755.0, 928.65],
+          ["000002.SZ", "20261116", 3.05, 3.05, 3.00, 3.01, 3.06, -0.05, -1.6340, 1485082.37, 449242.58, 623.0, 187.52],
+          ["000006.SZ", "20261116", 5.77, 5.77, 5.44, 5.51, 5.77, -0.26, -4.5061, 175670.75, 98265.90, 42.0, 23.14],
+          ["000007.SZ", "20261116", 8.89, 9.05, 8.70, 8.79, 8.92, -0.13, -1.4574, 56627.00, 49999.64, 0.0, 0.0],
+          ["000008.SZ", "20261116", 2.24, 2.26, 2.21, 2.21, 2.22, -0.01, -0.4505, 246116.46, 54875.04, 8.0, 1.77],
+          ["000009.SZ", "20261116", 6.32, 6.43, 6.25, 6.40, 6.33, 0.07, 1.1058, 138971.96, 88592.37, 20.0, 12.80],
+          ["000010.SZ", "20261116", 1.05, 1.05, 0.95, 0.95, 1.05, -0.10, -9.5238, 213713.36, 21386.49, 2615.0, 248.43],
+          ["000011.SZ", "20261116", 8.10, 8.18, 7.68, 7.68, 8.53, -0.85, -9.9648, 171134.62, 133092.93, 115.0, 88.32]
+        ]
+      },
+      daily_basic: {
+        columns: ["ts_code", "trade_date", "close", "turnover_rate", "pe_ttm", "pb", "total_mv"],
+        rows: [
+          ["000001.SZ", "20261116", 12.30, 1.1182, 5.42, 0.56, 23869142.10],
+          ["000002.SZ", "20261116", 3.01, 1.5280, null, 0.18, 3591140.80],
+          ["000009.SZ", "20261116", 6.40, 0.5388, 24.15, 1.62, 1650721.44]
+        ]
+      },
+      adj_factor: {
+        columns: ["ts_code", "trade_date", "adj_factor"],
+        rows: [
+          ["000001.SZ", "20261116", 129.418],
+          ["000002.SZ", "20261116", 175.204],
+          ["000006.SZ", "20261116", 42.881]
+        ]
+      },
+      stock_basic: {
+        columns: ["ts_code", "name", "area", "industry", "list_date"],
+        rows: [
+          ["000001.SZ", "平安银行", "深圳", "银行", "19910403"],
+          ["000002.SZ", "万科A", "深圳", "全国地产", "19910129"],
+          ["600519.SH", "贵州茅台", "贵州", "白酒", "20010827"]
+        ]
+      },
+      moneyflow: {
+        columns: ["ts_code", "trade_date", "buy_sm_amount", "buy_lg_amount", "net_mf_amount"],
+        rows: [
+          ["000001.SZ", "20261113", 38412.5, 92410.8, 18420.3],
+          ["000002.SZ", "20261113", 19220.1, 11402.0, -6412.9]
+        ]
+      }
+    };
+
+    const VIEW_TITLES = {
+      needs: ["我的数据", "声明式长期数据需求 · 自动准备日历、差异采集、回读校验与快照发布"],
+      warehouse: ["数据浏览", "IDE 分栏式本地 Parquet 快照工作台 · 离线毫秒级筛选、类型透视与裁剪导出"],
+      runs: ["运行记录", "16 线程采集协调器监控 · 结构化异常分类恢复与历史切片审计"],
+      datasets: ["预置采集目录", "8 大股票分类 102 个接口 · 全量/更新边界规则与 8000 积分核定"]
+    };
+
+    let state = {
+      liveApi: false,
+      whScope: "all",
+      activeDataset: "daily",
+      whPage: 1,
+      compactCols: true,
+      coloredNumbers: true,
+      currentColumns: [],
+      currentRows: []
+    };
+
+    // Theme Switching
+    document.querySelectorAll("[data-set-theme]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-set-theme]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.documentElement.setAttribute("data-theme", btn.dataset.setTheme);
+      });
+    });
+
+    // Navigation Switching
+    document.querySelectorAll("[data-nav]").forEach(btn => {
+      btn.addEventListener("click", () => switchView(btn.dataset.nav));
+    });
+
+    function switchView(view) {
+      document.querySelectorAll("[data-nav]").forEach(b => b.classList.toggle("active", b.dataset.nav === view));
+      ["needs", "warehouse", "runs", "datasets"].forEach(v => {
+        document.getElementById("view-" + v).classList.toggle("hidden", v !== view);
+      });
+      document.getElementById("topbar-title").textContent = VIEW_TITLES[view][0];
+      document.getElementById("topbar-sub").textContent = VIEW_TITLES[view][1];
+      if (view === "warehouse") {
+        renderWarehouseTree();
+        void loadWarehouseRows();
+      }
+    }
+
+    function jumpToWarehouse(datasetId) {
+      state.activeDataset = datasetId;
+      state.whPage = 1;
+      if (datasetId === "stock_basic") {
+        document.getElementById("whFilterStart").value = "";
+        document.getElementById("whFilterEnd").value = "";
+      } else if (datasetId === "moneyflow") {
+        document.getElementById("whFilterStart").value = "20261113";
+        document.getElementById("whFilterEnd").value = "20261113";
+      } else {
+        document.getElementById("whFilterStart").value = "20261116";
+        document.getElementById("whFilterEnd").value = "20261116";
+      }
+      switchView("warehouse");
+    }
+
+    // Warehouse Tree
+    function setWhScope(scope, btn) {
+      state.whScope = scope;
+      document.querySelectorAll("[data-wh-scope]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderWarehouseTree();
+    }
+
+    function findDatasetMeta(id) {
+      for (const g of WAREHOUSE_GROUPS) {
+        for (const item of g.items) if (item.id === id) return item;
+      }
+      return WAREHOUSE_GROUPS[0].items[0];
+    }
+
+    function renderWarehouseTree() {
+      const q = (document.getElementById("whTreeSearch").value || "").trim().toLowerCase();
+      const container = document.getElementById("whTreeList");
+      let html = "";
+      for (const g of WAREHOUSE_GROUPS) {
+        const items = g.items.filter(it => {
+          if (state.whScope === "ready" && it.state !== "ready") return false;
+          if (state.whScope === "empty" && it.state !== "empty") return false;
+          if (q && !it.id.includes(q) && !it.name.toLowerCase().includes(q)) return false;
+          return true;
+        });
+        if (!items.length) continue;
+        html += `<div class="domain-group"><div class="domain-title"><span>${g.domain}</span><span>${items.length}</span></div>`;
+        for (const it of items) {
+          const active = it.id === state.activeDataset ? "active" : "";
+          const dotColor = it.state === "ready" ? "#10b981" : "#94a3b8";
+          html += `
+            <button class="tree-item ${active}" onclick="jumpToWarehouse('${it.id}')">
+              <div style="min-width:0">
+                <div class="tree-item-name"><span style="color:${dotColor};margin-right:5px;">●</span>${it.name}</div>
+                <div class="tree-item-code mono">${it.id}</div>
+              </div>
+              <span class="tree-item-rows mono">${it.shortRows}</span>
+            </button>`;
+        }
+        html += `</div>`;
+      }
+      container.innerHTML = html || `<div style="padding:16px; color:var(--text-muted); font-size:12px;">无匹配数据集</div>`;
+    }
+
+    // Load Warehouse Rows (Live Read-Only from :7110 via proxy if available, else realistic fallback!)
+    async function loadWarehouseRows() {
+      const meta = findDatasetMeta(state.activeDataset);
+      document.getElementById("whActiveTitle").textContent = meta.name;
+      document.getElementById("whActiveCode").textContent = meta.id;
+      const badge = document.getElementById("whActiveBadge");
+      if (meta.state === "ready") {
+        badge.className = "badge badge-ok";
+        badge.textContent = "● 快照就绪";
+        document.getElementById("whActiveStats").innerHTML =
+          `<span class="mono">${meta.rows.toLocaleString()}</span> 行 · ${meta.span} · 快照 <code class="mono">${meta.snap}…</code>`;
+      } else {
+        badge.className = "badge badge-neutral";
+        badge.textContent = "尚未建仓";
+        document.getElementById("whActiveStats").textContent = `${meta.span} · 请先前往「预置采集目录」完成首次采集`;
+        document.getElementById("whThead").innerHTML = "";
+        document.getElementById("whTbody").innerHTML = `<tr><td style="padding:40px; text-align:center; color:var(--text-muted);">
+          当前数据集本地尚无快照记录。<button class="btn btn-sm btn-primary" style="margin-left:10px;" onclick="switchView('datasets')">前往规划首次采集 →</button>
+        </td></tr>`;
+        return;
+      }
+
+      const code = document.getElementById("whFilterCode").value.trim().toUpperCase();
+      const start = document.getElementById("whFilterStart").value.trim();
+      const end = document.getElementById("whFilterEnd").value.trim();
+
+      let cols = null;
+      let rows = null;
+      let totalMatched = meta.rows;
+
+      if (state.liveApi) {
+        try {
+          const qs = new URLSearchParams({
+            offset: String((state.whPage - 1) * 30),
+            limit: "30",
+          });
+          if (code) qs.set("ts_code", code);
+          if (/^\d{8}$/.test(start)) qs.set("start_date", start);
+          if (/^\d{8}$/.test(end)) qs.set("end_date", end);
+          const res = await fetch(`/api/warehouse/${encodeURIComponent(meta.id)}/rows?` + qs.toString());
+          if (res.ok) {
+            const data = await res.json();
+            cols = data.columns || [];
+            rows = data.rows || [];
+            if (typeof data.matching_rows === "number") totalMatched = data.matching_rows;
+            else if (typeof data.total_rows === "number") totalMatched = data.total_rows;
+          }
+        } catch (_) {}
+      }
+
+      if (!cols) {
+        const fb = FALLBACK_TABLES[meta.id] || FALLBACK_TABLES.daily;
+        cols = fb.columns;
+        rows = fb.rows.filter(r => (!code || String(r[0]).includes(code)));
+        totalMatched = rows.length;
+      }
+
+      state.currentColumns = cols;
+      state.currentRows = rows;
+      renderDataGrid(cols, rows, totalMatched);
+    }
+
+    function renderDataGrid(cols, rows, totalMatched) {
+      const visibleCols = cols.map((c, idx) => ({ name: c, idx, meta: FIELD_META[c] || { cn: c, dtype: "string", num: typeof (rows[0]?.[idx]) === "number" } }))
+        .filter(c => !(state.compactCols && c.meta.extra));
+
+      document.getElementById("whTable").classList.toggle("plain-numbers", !state.coloredNumbers);
+
+      document.getElementById("whThead").innerHTML = `<tr>` + visibleCols.map(c => `
+        <th class="${c.meta.num ? 'num' : ''}">
+          <span class="th-cn">${c.meta.cn}</span>
+          <span class="th-meta mono"><span>${c.name}</span><span class="dtype-chip">${c.meta.dtype}</span></span>
+        </th>`).join("") + `</tr>`;
+
+      if (!rows.length) {
+        document.getElementById("whTbody").innerHTML = `<tr><td colspan="${visibleCols.length}" style="padding:32px; text-align:center; color:var(--text-muted);">当前筛选条件下无匹配行</td></tr>`;
+      } else {
+        document.getElementById("whTbody").innerHTML = rows.map((row, rIdx) => `
+          <tr onclick="inspectRow(${rIdx})">` + visibleCols.map(c => {
+            const val = row[c.idx];
+            if (val === null || val === undefined) return `<td class="${c.meta.num ? 'num' : ''} mono" style="color:var(--text-muted)">—</td>`;
+            let cls = c.meta.num ? "num mono" : "mono";
+            let text = val;
+            if (typeof val === "number") {
+              if (c.meta.signed) {
+                if (val > 0) { cls += " val-up"; text = "+" + val.toFixed(2); }
+                else if (val < 0) { cls += " val-down"; text = val.toFixed(2); }
+                else text = val.toFixed(2);
+              } else {
+                text = Number.isInteger(val) ? val.toLocaleString() : val.toLocaleString(undefined, { maximumFractionDigits: 4 });
+              }
+            }
+            return `<td class="${cls}">${text}</td>`;
+          }).join("") + `</tr>`).join("");
+      }
+
+      document.getElementById("whPageLabel").textContent =
+        `匹配 ${totalMatched.toLocaleString()} 行 · 第 ${state.whPage} 页`;
+    }
+
+    function applyQuickDate(s, e, btn) {
+      document.querySelectorAll(".wh-filter-bar .quick-pill").forEach(p => {
+        if (p.id !== "btnColPreset" && p.id !== "btnColorToggle") p.classList.remove("active");
+      });
+      btn.classList.add("active");
+      document.getElementById("whFilterStart").value = s;
+      document.getElementById("whFilterEnd").value = e;
+      state.whPage = 1;
+      void loadWarehouseRows();
+    }
+
+    function toggleCompactCols() {
+      state.compactCols = !state.compactCols;
+      const btn = document.getElementById("btnColPreset");
+      btn.textContent = state.compactCols ? "列预设：核心字段" : "列预设：全部声明列";
+      btn.classList.toggle("active", state.compactCols);
+      renderDataGrid(state.currentColumns, state.currentRows, state.currentRows.length);
+    }
+
+    function toggleNumberColors() {
+      state.coloredNumbers = !state.coloredNumbers;
+      const btn = document.getElementById("btnColorToggle");
+      btn.textContent = state.coloredNumbers ? "涨跌着色：开" : "涨跌着色：素色";
+      btn.classList.toggle("active", !state.coloredNumbers);
+      document.getElementById("whTable").classList.toggle("plain-numbers", !state.coloredNumbers);
+    }
+
+    function changeWhPage(delta) {
+      state.whPage = Math.max(1, state.whPage + delta);
+      void loadWarehouseRows();
+    }
+
+    function inspectRow(rIdx) {
+      const row = state.currentRows[rIdx];
+      if (!row) return;
+      const meta = findDatasetMeta(state.activeDataset);
+      document.getElementById("rowDrawerTitle").textContent = `${row[0]} · ${row[1] || meta.name}`;
+      document.getElementById("rowDrawerSub").textContent = `数据集 ${meta.id} · 快照 ${meta.snap}…`;
+      const fieldsHtml = state.currentColumns.map((col, idx) => {
+        const fm = FIELD_META[col] || { cn: col, dtype: "string" };
+        const v = row[idx] === null || row[idx] === undefined ? "NULL" : row[idx];
+        return `<div style="display:flex; justify-content:space-between; padding:7px 10px; border-bottom:1px solid var(--border-subtle);">
+          <div><strong>${fm.cn}</strong> <span class="mono" style="color:var(--text-muted); font-size:11px;">${col} (${fm.dtype})</span></div>
+          <div class="mono" style="font-weight:600;">${v}</div>
+        </div>`;
+      }).join("");
+      document.getElementById("rowDrawerBody").innerHTML = `
+        <div class="card" style="padding:10px 12px; background:var(--bg-subtle); font-size:11.5px;">
+          <div><strong>存储分区：</strong><code class="mono">warehouse/${meta.id}/month=${String(row[1] || '202611').slice(0,6)}.parquet</code></div>
+          <div style="margin-top:4px;"><strong>校验凭据：</strong><span class="badge badge-ok">normalized_write_readback · SHA256 通过</span></div>
+        </div>
+        <div class="card" style="overflow:hidden;">${fieldsHtml}</div>
+      `;
+      openDrawer("rowDrawer");
+    }
+
+    // Pipeline Sync Simulation
+    function toggleSyncConfirm(show) {
+      document.getElementById("syncAuthBanner").classList.toggle("visible", show);
+      if (show) {
+        document.getElementById("chkSyncAuth").checked = false;
+        document.getElementById("btnConfirmSync").disabled = true;
+      }
+    }
+
+    function simulateSyncPipeline() {
+      toggleSyncConfirm(false);
+      const steps = document.querySelectorAll("#pipelineStepper .step-item");
+      steps.forEach(s => { s.classList.remove("running"); s.querySelector(".step-num").textContent = "…"; });
+      document.getElementById("pipeline-summary").innerHTML = `<strong style="color:var(--accent-text)">正在执行持久化闭环同步…</strong>`;
+      let idx = 0;
+      const timer = setInterval(() => {
+        if (idx > 0) {
+          steps[idx - 1].classList.remove("running");
+          steps[idx - 1].querySelector(".step-num").textContent = "✓";
+        }
+        if (idx < steps.length) {
+          steps[idx].classList.add("running");
+          steps[idx].querySelector(".step-num").textContent = idx + 1;
+          appendLog(`[step_${idx+1}] 正在推进阶段 ${idx + 1}/4 …`);
+          idx++;
+        } else {
+          clearInterval(timer);
+          document.getElementById("pipeline-summary").innerHTML = `<strong>本轮同步校验完成</strong> · 刚刚更新（复用无变化分区，0 错误）`;
+          showToast("同步闭环演示完成：全部 3 张表写后回读校验通过！");
+        }
+      }, 650);
+    }
+
+    // Thread Pool Visualization
+    function initThreadSlots(busy = 0) {
+      const el = document.getElementById("threadSlots");
+      el.innerHTML = Array.from({ length: 16 }, (_, i) =>
+        `<div class="thread-slot ${i < busy ? 'busy' : ''}" title="Worker #${i + 1}"></div>`
+      ).join("");
+      document.getElementById("busyThreadCount").textContent = `${busy} / 16`;
+    }
+
+    function simulateWorkerBurst() {
+      let ticks = 0;
+      const t = setInterval(() => {
+        const busy = ticks < 5 ? Math.floor(Math.random() * 11) + 5 : 0;
+        initThreadSlots(busy);
+        if (ticks >= 5) clearInterval(t);
+        ticks++;
+      }, 450);
+    }
+
+    // Overlays, Cmd+K & Log Dock
+    function openDrawer(id) { document.getElementById(id).classList.add("open"); }
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
+      if (id === "cmdModal") {
+        const inp = document.getElementById("cmdInput");
+        inp.value = "";
+        renderCmdList();
+        setTimeout(() => inp.focus(), 30);
+      }
+    }
+    function closeOverlay(id) { document.getElementById(id).classList.remove("open"); }
+
+    function toggleLogDock() {
+      document.getElementById("logDock").classList.toggle("open");
+    }
+
+    function appendLog(msg) {
+      const stream = document.getElementById("logStream");
+      const now = new Date().toTimeString().slice(0, 8);
+      const div = document.createElement("div");
+      div.className = "log-line";
+      div.innerHTML = `<span class="log-ts">${now}</span><span class="log-tag">[pipeline]</span><span>${msg}</span>`;
+      stream.appendChild(div);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function renderCmdList() {
+      const q = (document.getElementById("cmdInput").value || "").toLowerCase();
+      const entries = [
+        { label: "跳转：我的数据（声明托管与存储策略）", act: () => switchView("needs") },
+        { label: "跳转：数据浏览 · daily 日线行情 (18.4M 行)", act: () => jumpToWarehouse("daily") },
+        { label: "跳转：数据浏览 · daily_basic 每日指标 (18.3M 行)", act: () => jumpToWarehouse("daily_basic") },
+        { label: "跳转：数据浏览 · moneyflow 个股资金流 (14.2M 行)", act: () => jumpToWarehouse("moneyflow") },
+        { label: "跳转：数据浏览 · stock_basic 股票列表 (5,928 行)", act: () => jumpToWarehouse("stock_basic") },
+        { label: "跳转：运行记录与异常恢复", act: () => switchView("runs") },
+        { label: "跳转：102 个预置接口目录", act: () => switchView("datasets") },
+        { label: "打开：单次即时 API 查询", act: () => openModal("quickQueryModal") }
+      ].filter(e => !q || e.label.toLowerCase().includes(q));
+      const box = document.getElementById("cmdList");
+      box.innerHTML = entries.map((e, i) =>
+        `<button class="tree-item" data-cmd-idx="${i}" style="padding:8px 10px;"><span>${e.label}</span><span class="kbd">↵</span></button>`
+      ).join("");
+      box.querySelectorAll("[data-cmd-idx]").forEach(btn => {
+        btn.onclick = () => {
+          closeOverlay("cmdModal");
+          entries[Number(btn.dataset.cmdIdx)].act();
+        };
+      });
+    }
+
+    window.addEventListener("keydown", e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openModal("cmdModal");
+      } else if (e.key === "Escape") {
+        document.querySelectorAll(".backdrop.open").forEach(el => el.classList.remove("open"));
+      }
+    });
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+    }
+
+    // Probe Read-Only Proxy to :7110
+    async function probeLiveBackend() {
+      initThreadSlots(0);
+      try {
+        const res = await fetch("/api/status");
+        if (res.ok) {
+          const st = await res.json();
+          state.liveApi = true;
+          document.getElementById("conn-dot").className = "dot dot-ok dot-pulse";
+          document.getElementById("conn-text").textContent =
+            `已直连 :7110 实时只读数据 (${st.effective_collection_threads || 16}线程 · ${st.account_points || 8000}积分)`;
+          document.getElementById("worker-pill-text").textContent =
+            `${st.effective_collection_threads || 16} 线程 · ${st.global_requests_per_minute || 500} RPM`;
+          return;
+        }
+      } catch (_) {}
+      document.getElementById("conn-dot").className = "dot dot-warn";
+      document.getElementById("conn-text").textContent = "内置真实快照演示模式（零改动安全沙盒）";
+    }
+
+    void probeLiveBackend();
+  </script>
+</body>
+</html>

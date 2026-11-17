@@ -1,0 +1,2789 @@
+{
+  "version": "stock-permissions-8000-v1",
+  "verified_at": "2026-11-15T06:25:10.188866+00:00",
+  "account_points": 8000,
+  "account_points_source": "user_declared",
+  "general_doc_url": "https://tushare.pro/document/1?doc_id=290",
+  "overview_doc_url": "https://tushare.pro/document/1?doc_id=108",
+  "sources": [
+    {
+      "url": "https://tushare.pro/document/1?doc_id=290",
+      "sha256": "828f7939aad67ab0e502a414b7b3d3ba426c79cf9d629838adb827ba3d53a15b"
+    },
+    {
+      "url": "https://tushare.pro/document/1?doc_id=108",
+      "sha256": "cbc0eb61b97adb2cc00c5f28b2fea7535530f2abc2ec67b02117a7a9610f8793"
+    }
+  ],
+  "precedence": "explicit_interface_restriction_then_regular_points_table; unresolved_8000_rate_uses_30",
+  "entries": [
+    {
+      "id": "25",
+      "api_name": "stock_basic",
+      "name": "股票列表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=25",
+      "document_sha256": "141df28d91561ce1035b780410f806a8360199b524c70ba30d697119553df91d",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 50,
+      "configured_rpm": 50,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=25",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：每次最多返回6000行数据（覆盖全市场A股，会随股票总数增长而增加） 权限：2000积分起，每分钟请求50次"
+      ],
+      "note": ""
+    },
+    {
+      "id": "329",
+      "api_name": "stk_premarket",
+      "name": "每日股本（盘前）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=329",
+      "document_sha256": "42e8c8c667d9523e07c34fcaf17f2779c95b998b53c835d891b5ebc5d67c2d01",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "盘前股本",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=329",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大8000条数据，可循环提取 权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“盘前股本”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "26",
+      "api_name": "trade_cal",
+      "name": "交易日历",
+      "doc_url": "https://tushare.pro/document/2?doc_id=26",
+      "document_sha256": "89822283321967924919375475ed708875ed205ae26e62763ebe0efbfb2381bf",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=26",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：需2000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "397",
+      "api_name": "stock_st",
+      "name": "ST股票列表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=397",
+      "document_sha256": "d3007526a7d0b5c807c9873aae63735fe594ee045adbc33d9dea42aa30e76731",
+      "minimum_points": 3000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=397",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：3000积分起 提示：每天上午9:20更新，单次请求最大返回1000行数据，可循环提取,本接口数据从20000101开始,太早历史无法补齐"
+      ],
+      "note": ""
+    },
+    {
+      "id": "423",
+      "api_name": "st",
+      "name": "ST风险警示板股票",
+      "doc_url": "https://tushare.pro/document/2?doc_id=423",
+      "document_sha256": "7d3298aae4f7b0e5bf4810a3d68da7a12f8bbe5e0132aa702ec96a8a952c5057",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=423",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000，可根据股票代码循环获取历史数据 积分：6000积分可提取数据，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "398",
+      "api_name": "stock_hsgt",
+      "name": "沪深港通股票列表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=398",
+      "document_sha256": "ba517099254e1d3663cc8405d35791610c0674afc0ceccba57144c3d06e12fc1",
+      "minimum_points": 3000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=398",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：3000积分起 提示：每天上午9:20更新，单次请求最大返回2000行数据，可根据类型循环提取,本接口数据从20250812开始"
+      ],
+      "note": ""
+    },
+    {
+      "id": "100",
+      "api_name": "namechange",
+      "name": "股票曾用名",
+      "doc_url": "https://tushare.pro/document/2?doc_id=100",
+      "document_sha256": "2dfd3cacf906296b05a877237445ea5ce98ad5b7979f20dd52a02f2a6e4437f6",
+      "minimum_points": null,
+      "permission_kind": "undocumented",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "undocumented",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=100",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [],
+      "note": "接口页未公布积分门槛或频率；不推断为免费或无限制。"
+    },
+    {
+      "id": "112",
+      "api_name": "stock_company",
+      "name": "上市公司基本信息",
+      "doc_url": "https://tushare.pro/document/2?doc_id=112",
+      "document_sha256": "c840a289ce584bafbe1ab21c7fe5d98760d991ec382d2310fded929b0ab394d3",
+      "minimum_points": 120,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=112",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要至少120积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "193",
+      "api_name": "stk_managers",
+      "name": "上市公司管理层",
+      "doc_url": "https://tushare.pro/document/2?doc_id=193",
+      "document_sha256": "efdc74a1ae851ed812b48a156b77ade8ade0d7e6c072f52025abdeb0587125d7",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=193",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要2000积分才可以调取，5000积分以上频次相对较高，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "194",
+      "api_name": "stk_rewards",
+      "name": "管理层薪酬和持股",
+      "doc_url": "https://tushare.pro/document/2?doc_id=194",
+      "document_sha256": "9537ba9792cc92c731283e4aafb7382eca33dd4702157c14c34ab21ee449f5a7",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=194",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要2000积分才可以调取，5000积分以上频次相对较高，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "375",
+      "api_name": "bse_mapping",
+      "name": "北交所新旧代码对照",
+      "doc_url": "https://tushare.pro/document/2?doc_id=375",
+      "document_sha256": "9b7429c581d219a103c084a03e3f65f4ed5eb287c7c791f5a7cf9a8ecba4e68a",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=375",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条（本接口总数据量300以内） 积分：2000积分即可调取"
+      ],
+      "note": ""
+    },
+    {
+      "id": "123",
+      "api_name": "new_share",
+      "name": "IPO新股上市",
+      "doc_url": "https://tushare.pro/document/2?doc_id=123",
+      "document_sha256": "81cce9d9bb346743047a3cb9eae38ca8ff779ec44834f61557bfd4186a8e0222",
+      "minimum_points": 120,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=123",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000条，总量不限制 积分：用户需要至少120积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "262",
+      "api_name": "bak_basic",
+      "name": "股票历史列表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=262",
+      "document_sha256": "648b600ab699ecd131f9b11049ea96662ff5018fbe4e6204aa05e32a2b5b599f",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=262",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大7000条，可以根据日期参数循环获取历史，正式权限需要5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "27",
+      "api_name": "daily",
+      "name": "历史日线",
+      "doc_url": "https://tushare.pro/document/2?doc_id=27",
+      "document_sha256": "76a64eea51e1d3dfa44d6c84676f9c362850a9944af09fe6b0bebdffd1224c0d",
+      "minimum_points": 120,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=27",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "本接口是未复权行情，停牌期间不提供数据 调取说明： 最低120积分可以免费试用，每分钟50频次",
+        "基础5000积分每分钟内可调取500次，每次6000条数据，一次请求相当于提取一个股票23年历史"
+      ],
+      "note": ""
+    },
+    {
+      "id": "372",
+      "api_name": "rt_k",
+      "name": "实时日线",
+      "doc_url": "https://tushare.pro/document/2?doc_id=372",
+      "document_sha256": "5a51153166d9fae9efd7d48ddfc31fa4d263594aa9380d4adafde0947993d90e",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "A股日线RT",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 50,
+      "configured_rpm": 50,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=372",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可提取6000条数据，等同于一次提取全市场 权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“A股日线RT”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "370",
+      "api_name": "stk_mins",
+      "name": "历史分钟",
+      "doc_url": "https://tushare.pro/document/2?doc_id=370",
+      "document_sha256": "2daf99e2e6ddf391a1ae7f1548df9c3bf2abef4238f1b482ab4e0ebf2dcdd78a",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "A股历史分钟",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": 300000,
+      "quota_window": "rolling_24h",
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=370",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大8000行数据，每分钟500频次，每天的总量是30万频次，窗口24小时滚动刷新",
+        "权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“A股历史分钟”）"
+      ],
+      "note": "接口页每天300000次、滚动24小时窗口；历史起点2010年与总表2009年有差异，以接口页为准。"
+    },
+    {
+      "id": "374",
+      "api_name": "rt_min",
+      "name": "实时分钟",
+      "doc_url": "https://tushare.pro/document/2?doc_id=374",
+      "document_sha256": "02617fda098418e64a1354d1eb606f595356d15ab54887d6131ac90ef83c24a4",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "A股分钟RT",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=374",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000行数据，可以通过股票代码提取数据，支持逗号分隔的多个代码同时提取 权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“A股分钟RT”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "457",
+      "api_name": "rt_min_daily",
+      "name": "A股实时分钟-日累计",
+      "doc_url": "https://tushare.pro/document/2?doc_id=457",
+      "document_sha256": "7ebed271cc8d2863788852b7768ca3afbde6c24429dbf1734544cdfb8bbee17f",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "A股分钟RT",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=457",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“A股分钟RT”）",
+        "freq None Y 频次"
+      ],
+      "note": ""
+    },
+    {
+      "id": "144",
+      "api_name": "weekly",
+      "name": "周线行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=144",
+      "document_sha256": "5fd17175baa6486fc9f2263fbe3d8746e41f1f447cef5534a659cff6d04d9ac2",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=144",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000行，可使用交易日期循环提取，总量不限制 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "145",
+      "api_name": "monthly",
+      "name": "月线行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=145",
+      "document_sha256": "f0d521f02aa7d7e71d2f8bb34d5285adecc045a46d7113e1c37f27c98e3eefc4",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=145",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大4500行，总量不限制 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "146",
+      "api_name": "pro_bar",
+      "name": "复权行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=146",
+      "document_sha256": "6eee04b637d72f959715c63d80267b8f2fbb0cd4a1ae5e773603f8b57cd8bea1",
+      "minimum_points": 2000,
+      "permission_kind": "derived",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=146",
+        "https://tushare.pro/document/1?doc_id=290",
+        "https://tushare.pro/document/1?doc_id=108"
+      ],
+      "evidence": [],
+      "note": "SDK动态复权，无独立HTTP请求额度；每个行情/复权因子子请求分别限流。"
+    },
+    {
+      "id": "336",
+      "api_name": "stk_weekly_monthly",
+      "name": "周/月线行情(每日更新)",
+      "doc_url": "https://tushare.pro/document/2?doc_id=336",
+      "document_sha256": "14a4293374d7555de7748d6305dd8cc3b0d4a68cd07daf00ad99a03bbbced674",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=336",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000,可使用交易日期循环提取，总量不限制 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法",
+        "freq str Y 频率week周，month月",
+        "freq str Y 频率(周week,月month)"
+      ],
+      "note": ""
+    },
+    {
+      "id": "365",
+      "api_name": "stk_week_month_adj",
+      "name": "周/月线复权行情(每日更新)",
+      "doc_url": "https://tushare.pro/document/2?doc_id=365",
+      "document_sha256": "c2a98ca394b322f9f59cde9bcc4ea20a199bed3b575e7d623ecce02dbc8d1544",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=365",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000,可使用交易日期循环提取，总量不限制 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法",
+        "freq str Y 频率week周，month月",
+        "freq str Y 频率(周week,月month)"
+      ],
+      "note": ""
+    },
+    {
+      "id": "28",
+      "api_name": "adj_factor",
+      "name": "复权因子",
+      "doc_url": "https://tushare.pro/document/2?doc_id=28",
+      "document_sha256": "5f99cbe475b2fde0aef5bf6a20696e5bee60b379c84d5750bfd5e0d7e182aba8",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=28",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分要求：2000积分起，5000以上可高频调取"
+      ],
+      "note": ""
+    },
+    {
+      "id": "32",
+      "api_name": "daily_basic",
+      "name": "每日指标",
+      "doc_url": "https://tushare.pro/document/2?doc_id=32",
+      "document_sha256": "954144ce31bc682d1340859c448dfe68680de60dd7c48dd66ff369e63dfecd05",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=32",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：至少2000积分才可以调取，5000积分无总量限制，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "109",
+      "api_name": "pro_bar",
+      "name": "通用行情接口",
+      "doc_url": "https://tushare.pro/document/2?doc_id=109",
+      "document_sha256": "0a6461ca93f2ed67c4c6b73c61df73a80545c65f71c02852f0ac4fa4e20c124a",
+      "minimum_points": 120,
+      "permission_kind": "derived",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=109",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "不同数据对应不同的积分要求，具体请参阅每类数据的文档说明",
+        "对于分钟数据有600积分用户可以试用（请求2次），正式权限可以参考 权限列表说明 ，使用方法请参考 股票分钟使用方法"
+      ],
+      "note": "股票日/周/月及复权权限取决于实际子接口；分钟须独立授权，本采集器仅允许股票日/周/月。"
+    },
+    {
+      "id": "183",
+      "api_name": "stk_limit",
+      "name": "每日涨跌停价格",
+      "doc_url": "https://tushare.pro/document/2?doc_id=183",
+      "document_sha256": "134fc2345846f46efd60f01af7ca75c5d4fda39e63c08cdbb34f1f0766f0aea6",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=183",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最多提取5800条记录，可循环调取，总量不限制 积分：用户积2000积分可调取，单位分钟有流控，积分越高流量越大，请自行提高积分，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "214",
+      "api_name": "suspend_d",
+      "name": "每日停复牌信息",
+      "doc_url": "https://tushare.pro/document/2?doc_id=214",
+      "document_sha256": "e648737d71c9065f0cca36e0b5b3ce3d5d2d22bca5e2a1cdcca761bdfc90899e",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=214",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "至少需要2000积分 可以调用，5000积分可以获得更高的频次，按日期方式获取股票每日停复牌信息"
+      ],
+      "note": ""
+    },
+    {
+      "id": "48",
+      "api_name": "hsgt_top10",
+      "name": "沪深股通十大成交股",
+      "doc_url": "https://tushare.pro/document/2?doc_id=48",
+      "document_sha256": "c93985b0212a3698617dd07d3d0cfd11ebf6696b820d51afa0d096c55e8b4981",
+      "minimum_points": null,
+      "permission_kind": "undocumented",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "undocumented",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=48",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [],
+      "note": "接口页及积分最低分值总表均未公布该接口门槛；不推断为免费或无限制。"
+    },
+    {
+      "id": "255",
+      "api_name": "bak_daily",
+      "name": "备用行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=255",
+      "document_sha256": "8026ddc1d1b251b00d027ededc27e587f6d34311906ae69dbce5a3f48c27951f",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=255",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大7000行数据，可以根据日期参数循环获取，正式权限需要5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "33",
+      "api_name": "income",
+      "name": "利润表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=33",
+      "document_sha256": "35c5693cdeda6f215cba48a8c0923ad09c8164e23d1ad20129e3ac9c2f94427e",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=33",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用income_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "36",
+      "api_name": "balancesheet",
+      "name": "资产负债表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=36",
+      "document_sha256": "96619cdc5bc26b3b721726f42b9fe27e5615714967cbc5eb731904adc0cab3a7",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=36",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用balancesheet_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "44",
+      "api_name": "cashflow",
+      "name": "现金流量表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=44",
+      "document_sha256": "6158a6cc2bb3eee924cd8925643edf6bf117e4fa9f6f18882de1fff5f6b1c809",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=44",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用cashflow_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "45",
+      "api_name": "forecast",
+      "name": "业绩预告",
+      "doc_url": "https://tushare.pro/document/2?doc_id=45",
+      "document_sha256": "aaf4b5bbc5e0105c7145b47aab393edbfb58f573c4bfdd24051b0a780e417b3d",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=45",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：用户需要至少2000积分才可以调取，每日20点~21点更新，单次3500行，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用forecast_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "46",
+      "api_name": "express",
+      "name": "业绩快报",
+      "doc_url": "https://tushare.pro/document/2?doc_id=46",
+      "document_sha256": "e2f6de9b15a1e47c74e609a9e90996b480cee4a857bf72d7c82bafa4f7b8c585",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=46",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用express_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "103",
+      "api_name": "dividend",
+      "name": "分红送股数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=103",
+      "document_sha256": "f072bc01c5b3988550d9bbf8bf0e7919ae17c294f6c751aa3ba0638347b65be5",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=103",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：起始时间2000-01-01，单次查询返回2000行，每日20点~21点更新，用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "79",
+      "api_name": "fina_indicator",
+      "name": "财务指标数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=79",
+      "document_sha256": "497c3f23be34c338d02f8dfa0fdcb73e40cc6c28d891c804ce0f3d9ba688c8f1",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=79",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用fina_indicator_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "80",
+      "api_name": "fina_audit",
+      "name": "财务审计意见",
+      "doc_url": "https://tushare.pro/document/2?doc_id=80",
+      "document_sha256": "2ec42dcdba7a5c0ee1100952ab5132be4a66d3c5cfc84afd613138af2786c6f3",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=80",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "81",
+      "api_name": "fina_mainbz",
+      "name": "主营业务构成",
+      "doc_url": "https://tushare.pro/document/2?doc_id=81",
+      "document_sha256": "5c2f79c3af658c28faa4be77cd7254f6a3250813de6f95d8b2ac71bfb1a22597",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=81",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法 ，单次最大提取100行，总量不限制，可循环获取",
+        "提示：当前接口只能按单只股票获取其历史数据，如果需要获取某一季度全部上市公司数据，请使用fina_mainbz_vip接口（参数一致），需积攒5000积分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "162",
+      "api_name": "disclosure_date",
+      "name": "财报披露日期表",
+      "doc_url": "https://tushare.pro/document/2?doc_id=162",
+      "document_sha256": "4cb92d07573f97b8bd5613c59cc3918a06927868f74bc60ed4ef9898a27ba390",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=162",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000，总量不限制 积分：用户需要至少2000积分才可以调取，积分越多权限越大，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "451",
+      "api_name": "stk_shock",
+      "name": "个股异常波动",
+      "doc_url": "https://tushare.pro/document/2?doc_id=451",
+      "document_sha256": "023235eac333ebec20666c7f525cda90405492374104aae446fed8b77bba6363",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=451",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条，可根据代码或日期循环提取 积分：需要6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "452",
+      "api_name": "stk_high_shock",
+      "name": "个股严重异常波动",
+      "doc_url": "https://tushare.pro/document/2?doc_id=452",
+      "document_sha256": "d1c6a3ff6e4c670a68ff92f2b52c515b53c86a6c63c02a5c725514e10d71fc58",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=452",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条，可根据代码或日期循环提取 积分：需要6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "453",
+      "api_name": "stk_alert",
+      "name": "交易所重点提示证券",
+      "doc_url": "https://tushare.pro/document/2?doc_id=453",
+      "document_sha256": "f570fb2bdc2d6e87f02038b541f2302dae1684254aaeccd87997ca30a5c16435",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=453",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条，可根据代码或日期循环提取 积分：需要6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "61",
+      "api_name": "top10_holders",
+      "name": "前十大股东",
+      "doc_url": "https://tushare.pro/document/2?doc_id=61",
+      "document_sha256": "26ebb33be6ad9ab4b1315b3645b55dc6a9f981b6616f1e4874d2938ce45c9d84",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=61",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：需2000积分以上才可以调取本接口，5000积分以上频次会更高"
+      ],
+      "note": ""
+    },
+    {
+      "id": "62",
+      "api_name": "top10_floatholders",
+      "name": "前十大流通股东",
+      "doc_url": "https://tushare.pro/document/2?doc_id=62",
+      "document_sha256": "0b64daf57de3d20ab92d460df17ec702cc598844ebb23220fc621e68ba093602",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=62",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：需2000积分以上才可以调取本接口，5000积分以上频次会更高"
+      ],
+      "note": ""
+    },
+    {
+      "id": "110",
+      "api_name": "pledge_stat",
+      "name": "股权质押统计数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=110",
+      "document_sha256": "6c21650bdd7afb6676449a63321d81363e4e947ab081f4bfe609eb0009f20fd9",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=110",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "111",
+      "api_name": "pledge_detail",
+      "name": "股权质押明细数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=111",
+      "document_sha256": "eba445265dff65257261c14a1bde795750b27791a229ce722f16320925cef0b8",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=111",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "124",
+      "api_name": "repurchase",
+      "name": "股票回购",
+      "doc_url": "https://tushare.pro/document/2?doc_id=124",
+      "document_sha256": "c64282a9291419dcaff69db9d8633ea5e1536b5d065e67be6eb5961cb02180e3",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=124",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "160",
+      "api_name": "share_float",
+      "name": "限售股解禁",
+      "doc_url": "https://tushare.pro/document/2?doc_id=160",
+      "document_sha256": "d2fc9c7ee9931fef28df9141c0c67ddfea540f71107130586ac4bb26655f42a8",
+      "minimum_points": 3000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=160",
+        "https://tushare.pro/document/1?doc_id=290",
+        "https://tushare.pro/document/1?doc_id=108"
+      ],
+      "evidence": [
+        "限量：单次最大6000条，总量不限制 积分：120分可调取，每分钟内限制次数，超过5000积分频次相对较高，具体请参阅 积分获取办法"
+      ],
+      "note": "接口页写120分，最低分值总表写3000分；保守采用3000分并保留冲突。"
+    },
+    {
+      "id": "161",
+      "api_name": "block_trade",
+      "name": "大宗交易",
+      "doc_url": "https://tushare.pro/document/2?doc_id=161",
+      "document_sha256": "b007c6dc8dbc8182f062d8ce4cefd70d78de658326d2637d79a37941b5e74238",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=161",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条，总量不限制 积分：2000积分可调取，每分钟内限制次数，超过5000积分频次相对较高，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "164",
+      "api_name": "stk_account",
+      "name": "股票开户数据（停）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=164",
+      "document_sha256": "80a92f1cf773c153d62c9f9b72566bc9a75226a4d289376c14363a631d4a7677",
+      "minimum_points": 600,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=164",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：600积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "165",
+      "api_name": "stk_account_old",
+      "name": "股票开户数据（旧）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=165",
+      "document_sha256": "4c172590dee3b5eeb7eeef1bceeec45ca55f82276a323d8099535c5057344b63",
+      "minimum_points": 600,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=165",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "积分：600积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "166",
+      "api_name": "stk_holdernumber",
+      "name": "股东人数",
+      "doc_url": "https://tushare.pro/document/2?doc_id=166",
+      "document_sha256": "df6252b2d80e4223520dc2e5835c5e3ee19a0662bc7077bc71c05b3deec59bab",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=166",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大3000,总量不限制 积分：2000积分可调取，基础积分每分钟调取200次，5000积分以上频次相对较高",
+        "具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "175",
+      "api_name": "stk_holdertrade",
+      "name": "股东增减持",
+      "doc_url": "https://tushare.pro/document/2?doc_id=175",
+      "document_sha256": "17a0080d99f712c8d4367ced543b3463e0ee81320752c31ccc87a8b0e3e95c85",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=175",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大提取3000行记录，总量不限制 积分：用户需要至少2000积分才可以调取",
+        "基础积分有流量控制，积分越多权限越大，5000积分以上无明显限制，请自行提高积分，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "494",
+      "api_name": "stk_seasoned",
+      "name": "股票增发",
+      "doc_url": "https://tushare.pro/document/2?doc_id=494",
+      "document_sha256": "0deae39fd2f391a435eede1a491ee755af81bb3d9d23266df5364529059cf189",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=494",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：每日早晚9:00更新，数据开始于1991年，单次最大3000条，可根据代码或日期循环提取 积分：需要2000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "292",
+      "api_name": "report_rc",
+      "name": "券商盈利预测数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=292",
+      "document_sha256": "d2d78f64bb124ca7af05ad40b3b7390b4e5608ae1afe5cbf740d76d12afd3e55",
+      "minimum_points": 8000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": 100000,
+      "quota_window": "calendar_day",
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=292",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大3000条，可分页和循环提取所有数据 权限：本接口2000积分可以试用，每天10次请求，正式权限需8000积分，每天可请求100000次，10000积分以上无总量限制"
+      ],
+      "note": "2000积分仅每天10次试用；8000积分正式权限每天100000次。总表将盈利预测列为10000分特色权限，保留冲突，以接口页明确8000档为准；该档未公布分钟频率。"
+    },
+    {
+      "id": "293",
+      "api_name": "cyq_perf",
+      "name": "每日筹码及胜率",
+      "doc_url": "https://tushare.pro/document/2?doc_id=293",
+      "document_sha256": "e3f885a54f5ff53648f73085fb6726831bc173193ea7ec5c919bd4d0fe998553",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": 20000,
+      "quota_window": "calendar_day",
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=293",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000条，可以分页或者循环提取 积分：5000积分每天20000次，10000积分每天200000次，15000积分每天不限总量"
+      ],
+      "note": "8000积分沿用5000档每天20000次。接口页未给出8000档分钟频率；不套用10000档特色300次。"
+    },
+    {
+      "id": "294",
+      "api_name": "cyq_chips",
+      "name": "每日筹码分布",
+      "doc_url": "https://tushare.pro/document/2?doc_id=294",
+      "document_sha256": "41c0f7aab86a7107a41899ed823b28eebfdb1c3d3dc0b134b55a79f78616c15b",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 200,
+      "configured_rpm": 200,
+      "rate_source": "interface_document",
+      "daily_limit": 20000,
+      "quota_window": "calendar_day",
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=294",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000条，可以按股票代码和日期循环提取 积分：5000积分每天20000次每分钟可以取200次，10000积分每天200000次，15000积分每天不限总量"
+      ],
+      "note": "8000积分沿用5000档每分钟200次、每天20000次。"
+    },
+    {
+      "id": "296",
+      "api_name": "stk_factor",
+      "name": "股票技术面因子",
+      "doc_url": "https://tushare.pro/document/2?doc_id=296",
+      "document_sha256": "76d9f6f02bacf649bd1856e7cd639875d996154da656d6e33f54bd4849ae92a1",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=296",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大10000条，可以循环或者分页提取 积分：5000积分每分钟可以请求100次，8000积分以上每分钟500次，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "328",
+      "api_name": "stk_factor_pro",
+      "name": "股票技术面因子(专业版）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=328",
+      "document_sha256": "838a9d4f2ab311c33c69e73779cfb1adde49b410893b867a35c63c3e86f3cefe",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=328",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次调取最多返回10000条数据，可以通过日期参数循环 积分：5000积分每分钟可以请求30次，8000积分以上每分钟500次，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "353",
+      "api_name": "stk_auction_o",
+      "name": "股票开盘集合竞价数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=353",
+      "document_sha256": "e17ab9ad78e6b1adff6d89ba8ae8dd149f4831dff774001a8ed9b13679bd115b",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "集合竞价成交",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=353",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次请求最大返回10000行数据，数据从2010-01-01开始，每个交易日20点更新，可根据日期循环",
+        "权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“集合竞价成交”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "354",
+      "api_name": "stk_auction_c",
+      "name": "股票收盘集合竞价数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=354",
+      "document_sha256": "83e964f3da5a287b1d94ac8094377d8a8afd1c7c428092da13cd0255365083a5",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "集合竞价成交",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=354",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次请求最大返回10000行数据，，数据从2010-01-01开始，每个交易日20点更新，可根据日期循环 权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“集合竞价成交”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "364",
+      "api_name": "stk_nineturn",
+      "name": "神奇九转指标",
+      "doc_url": "https://tushare.pro/document/2?doc_id=364",
+      "document_sha256": "a11843f1b358dc893012f795eabef9ee68f4d727365d442e3817e7f7f9fb46bf",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=364",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次提取最大返回10000行数据，可通过股票代码和日期循环获取全部数据 权限：达到6000积分可以调用",
+        "freq str N 频率(日daily)",
+        "freq str Y 频率(日daily)"
+      ],
+      "note": ""
+    },
+    {
+      "id": "399",
+      "api_name": "stk_ah_comparison",
+      "name": "AH股比价",
+      "doc_url": "https://tushare.pro/document/2?doc_id=399",
+      "document_sha256": "edbabdbf301f92b952e21394ab0b54307d5c4c394403304dca78d77d51ce73dc",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=399",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：5000积分起 提示：每天盘后17:00更新，单次请求最大返回1000行数据，可循环提取,本接口数据从20250812开始，由于历史不好补充，只能累积"
+      ],
+      "note": ""
+    },
+    {
+      "id": "275",
+      "api_name": "stk_surv",
+      "name": "机构调研数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=275",
+      "document_sha256": "64f6f4cfb5e163da24925da3d3ab154a98bd33f88ec17f8d2b38544a1977bcde",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=275",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大获取400条数据，可循环或分页提取 积分：用户积5000积分可使用"
+      ],
+      "note": ""
+    },
+    {
+      "id": "267",
+      "api_name": "broker_recommend",
+      "name": "券商月度金股",
+      "doc_url": "https://tushare.pro/document/2?doc_id=267",
+      "document_sha256": "7bc1b11ef9f533b38a84b675708217ee686f56c63ee5eca5e026f5f6fdeb5974",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "not_documented_for_8000",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=267",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000行数据，可循环提取 积分：积分达到6000即可调用，具体请参阅 积分获取办法"
+      ],
+      "note": "接口页写6000积分，总表将券商金股列为10000分特色权限；保留冲突，以接口页门槛为准，8000档分钟频率未公布。"
+    },
+    {
+      "id": "58",
+      "api_name": "margin",
+      "name": "融资融券交易汇总",
+      "doc_url": "https://tushare.pro/document/2?doc_id=58",
+      "document_sha256": "fff707e19a6ea74a8aaa979792526ec9be4faf86d4e54b1dd72df597a346bd91",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=58",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次请求最大返回4000行数据，可根据日期循环 权限：2000积分可获得本接口权限，积分越高权限越大，具体参考 权限说明"
+      ],
+      "note": ""
+    },
+    {
+      "id": "59",
+      "api_name": "margin_detail",
+      "name": "融资融券交易明细",
+      "doc_url": "https://tushare.pro/document/2?doc_id=59",
+      "document_sha256": "15530f5e153d73fa4ba10f8af3be4e18dd0021bc2ee33dee53aee10ed5b530c0",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=59",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次请求最大返回6000行数据，可根据日期循环 权限：2000积分可获得本接口权限，积分越高权限越大，具体参考 权限说明"
+      ],
+      "note": ""
+    },
+    {
+      "id": "326",
+      "api_name": "margin_secs",
+      "name": "融资融券标的（盘前）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=326",
+      "document_sha256": "cb48803ad4db3e94f31ff3f29007cc2967825c37328a710f79c8daa4e9bc26a1",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=326",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000行数据，可根据股票代码、交易日期、交易所代码循环提取 积分：2000积分可调取，5000积分无总量限制，积分越高权限越大，具体参考 权限说明"
+      ],
+      "note": ""
+    },
+    {
+      "id": "332",
+      "api_name": "slb_sec",
+      "name": "转融券交易汇总(停）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=332",
+      "document_sha256": "28ced6dee100d92ca15f3389b3ef0edea830e7a5b63aa787df96045cc445d035",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=332",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可以提取5000行数据，可循环获取所有历史 积分：2000积分每分钟请求200次，5000积分500次请求"
+      ],
+      "note": ""
+    },
+    {
+      "id": "331",
+      "api_name": "slb_len",
+      "name": "转融资交易汇总",
+      "doc_url": "https://tushare.pro/document/2?doc_id=331",
+      "document_sha256": "cb3aaee9f28a88ad06c07891a3c3a17d52400d5baeb5a30669d9b6abc82174b3",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=331",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可以提取5000行数据，可循环获取所有历史 积分：2000积分每分钟请求200次，5000积分500次请求"
+      ],
+      "note": ""
+    },
+    {
+      "id": "333",
+      "api_name": "slb_sec_detail",
+      "name": "转融券交易明细(停）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=333",
+      "document_sha256": "a30b5c933ebd9dd427c3287e8bcb9548211b993491089dee69624eaff571b8f5",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=333",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可以提取5000行数据，可循环获取所有历史 积分：2000积分每分钟请求200次，5000积分500次请求"
+      ],
+      "note": ""
+    },
+    {
+      "id": "334",
+      "api_name": "slb_len_mm",
+      "name": "做市借券交易汇总(停）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=334",
+      "document_sha256": "17acb0b7d4df7281dace0c2559be487a54414c9cbe64875462c800f072f5e782",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=334",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可以提取5000行数据，可循环获取所有历史 积分：2000积分每分钟请求200次，5000积分500次请求"
+      ],
+      "note": ""
+    },
+    {
+      "id": "170",
+      "api_name": "moneyflow",
+      "name": "个股资金流向",
+      "doc_url": "https://tushare.pro/document/2?doc_id=170",
+      "document_sha256": "3434a8df721592e730ffb929e91379a0c0b835156fa9ba4c2c364adce8d9b5ad",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=170",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大提取6000行记录，总量不限制 积分：用户需要至少2000积分才可以调取，基础积分有流量控制，积分越多权限越大，请自行提高积分，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "348",
+      "api_name": "moneyflow_ths",
+      "name": "个股资金流向（THS）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=348",
+      "document_sha256": "733591a4b6e866fae9fdfecaa35f02aefd24151fb7165a710ff930bdb7162b8a",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=348",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大6000，可根据日期或股票代码循环提取数据，开始于2019-07-26",
+        "积分：6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "349",
+      "api_name": "moneyflow_dc",
+      "name": "个股资金流向（DC）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=349",
+      "document_sha256": "535a153b3f75a65611983fcd486b3ad7fb5cb7a440797008bba9b9f32c4ea23a",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=349",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大获取6000条数据，可根据日期或股票代码循环提取数据 积分：用户需要至少5000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "371",
+      "api_name": "moneyflow_cnt_ths",
+      "name": "板块资金流向（THS)",
+      "doc_url": "https://tushare.pro/document/2?doc_id=371",
+      "document_sha256": "1a03479fa00b28ff9204a2eb1115ef640b24b3ace733335bf78432127ae54859",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=371",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可调取5000条数据，可以根据日期和代码循环提取全部数据 积分：6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "343",
+      "api_name": "moneyflow_ind_ths",
+      "name": "行业资金流向（THS）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=343",
+      "document_sha256": "1b157d259caa8fb2a1359a3961c6689c1c421cba81773b8a4a0dc1700f83b179",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=343",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可调取5000条数据，开始于2024-09-10，可以根据日期和代码循环提取全部数据 积分：6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "344",
+      "api_name": "moneyflow_ind_dc",
+      "name": "板块资金流向（DC）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=344",
+      "document_sha256": "b731db2e13d901bdeeef6a880613690f0ad9ee10ecbbb701d827a014cc1f93e4",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=344",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可调取5000条数据，可以根据日期和代码循环提取全部数据 积分：6000积分可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "345",
+      "api_name": "moneyflow_mkt_dc",
+      "name": "大盘资金流向（DC）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=345",
+      "document_sha256": "ff8d74101aab26a296278d26ab423c51b66403df1890d1964654236f7d743aa1",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=345",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大3000条，可根据日期或日期区间循环获取 积分：120积分可试用，6000积分可正式调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "106",
+      "api_name": "top_list",
+      "name": "龙虎榜每日统计单",
+      "doc_url": "https://tushare.pro/document/2?doc_id=106",
+      "document_sha256": "51694388e86c9cc8006fed8d4c593b04c0124a760f66e6fd400b72405d1e0fd6",
+      "minimum_points": 2000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=106",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次请求返回最大10000行数据，可通过参数循环获取全部历史 积分：用户需要至少2000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "107",
+      "api_name": "top_inst",
+      "name": "龙虎榜机构交易单",
+      "doc_url": "https://tushare.pro/document/2?doc_id=107",
+      "document_sha256": "e7d2bccf8fe08a5ff09e18afa023d237ff1145e8a06d573b6f192782c69f7abc",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=107",
+        "https://tushare.pro/document/1?doc_id=290",
+        "https://tushare.pro/document/1?doc_id=108"
+      ],
+      "evidence": [
+        "限量：单次请求最大返回10000行数据，可根据参数循环获取全部历史 积分：用户需要至少5000积分才可以调取，具体请参阅 积分获取办法"
+      ],
+      "note": "接口页要求5000积分，最低分值总表写2000分；采用接口页较高门槛。"
+    },
+    {
+      "id": "355",
+      "api_name": "limit_list_ths",
+      "name": "THS涨跌停榜单",
+      "doc_url": "https://tushare.pro/document/2?doc_id=355",
+      "document_sha256": "6ec2a51037916c99a8af96e199ed6362ea8455b21fe11507bddefd220b43cf44",
+      "minimum_points": 8000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=355",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大4000条，可根据日期或股票代码循环提取 积分：8000积分以上每分钟500次，每天总量不限制，具体请参阅 积分获取办法 注意：本接口只限个人学习和研究使用，如需商业用途，请自行联系同花顺解决数据采购问题"
+      ],
+      "note": ""
+    },
+    {
+      "id": "298",
+      "api_name": "limit_list_d",
+      "name": "涨跌停和炸板数据",
+      "doc_url": "https://tushare.pro/document/2?doc_id=298",
+      "document_sha256": "dd243b86e227ffc3d8c57d2d862624e1fe4f07d55fe6e1c3635dee9c7bbe7a16",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=298",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可以获取2500条数据，可通过日期或者股票循环提取 积分：5000积分每分钟可以请求200次每天总量1万次，8000积分以上每分钟500次每天总量不限制，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "356",
+      "api_name": "limit_step",
+      "name": "涨停股票连板天梯",
+      "doc_url": "https://tushare.pro/document/2?doc_id=356",
+      "document_sha256": "0032e6e46ab682d15be85af12860f166b191994434ce3d8f59f9ee48a4d53fd6",
+      "minimum_points": 8000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=356",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000行数据，可根据股票代码或者日期循环提取全部 积分：8000积分以上每分钟500次，每天总量不限制，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "357",
+      "api_name": "limit_cpt_list",
+      "name": "涨停最强板块统计",
+      "doc_url": "https://tushare.pro/document/2?doc_id=357",
+      "document_sha256": "515a101d4084ae7fb795462981706ce9cb479032802ef5e2ae3458ec81acbbb4",
+      "minimum_points": 8000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=357",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000行数据，可根据股票代码或者日期循环提取全部 积分：8000积分以上每分钟500次，每天总量不限制，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "259",
+      "api_name": "ths_index",
+      "name": "THS概念板块分类",
+      "doc_url": "https://tushare.pro/document/2?doc_id=259",
+      "document_sha256": "8193a052b2d17cb087955fd6bf006e9a72d1aad39b03a1c74e83e725ef794f35",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=259",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "权限：本接口需有6000积分，单次最大返回5000行数据，一次可提取全部数据，请勿循环提取"
+      ],
+      "note": ""
+    },
+    {
+      "id": "260",
+      "api_name": "ths_daily",
+      "name": "THS概念板块行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=260",
+      "document_sha256": "beb7ae2ab79def9501a42abe892a31d3c49f14a3980c140f934252b239037e3f",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=260",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大3000行数据（需6000积分），可根据指数代码、日期参数循环提取"
+      ],
+      "note": ""
+    },
+    {
+      "id": "261",
+      "api_name": "ths_member",
+      "name": "THS概念板块成分",
+      "doc_url": "https://tushare.pro/document/2?doc_id=261",
+      "document_sha256": "9ebc748d7f0f8d4766ee393f4a381b98fc69e5d6f8d60c22188830cb9de8e948",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 200,
+      "configured_rpm": 200,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=261",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：用户积累6000积分可调取，每分钟可调取200次，是最新的概念板块成分"
+      ],
+      "note": ""
+    },
+    {
+      "id": "362",
+      "api_name": "dc_index",
+      "name": "DC概念板块分类",
+      "doc_url": "https://tushare.pro/document/2?doc_id=362",
+      "document_sha256": "94e40b1bb45d7780dbef071b561123f99291722bc5a7921a5912ba20d6d0d030",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=362",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大可获取5000条数据，历史数据可根据日期循环获取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "363",
+      "api_name": "dc_member",
+      "name": "DC概念板块成分",
+      "doc_url": "https://tushare.pro/document/2?doc_id=363",
+      "document_sha256": "01dc6577fd3ed1ecc4d120a0dcc04fe471726bd493684e3c8901b6559efe166a",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=363",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大获取5000条数据，可以通过日期和代码循环获取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "382",
+      "api_name": "dc_daily",
+      "name": "DC概念板块行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=382",
+      "document_sha256": "967ed01ab05f2fc47474b700e81942acab0a7be0883de86ad107864397cc9283",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=382",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000条数据，可根据日期参数循环获取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "369",
+      "api_name": "stk_auction",
+      "name": "开盘竞价成交（当日）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=369",
+      "document_sha256": "474371da75327bb8bda4e7ab1698b15886b4f23242887cd810d7f3b679daf9c6",
+      "minimum_points": null,
+      "permission_kind": "independent",
+      "independent_permission": "集合竞价成交",
+      "account_points": 8000,
+      "account_access": "requires_independent_permission",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "independent_permission_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=369",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大返回8000行数据，可根据日期或代码循环获取历史 权限：本接口数据需单独开通权限，请参考 权限列表 ，前往 权限中心 申请（需勾选“集合竞价成交”）"
+      ],
+      "note": ""
+    },
+    {
+      "id": "311",
+      "api_name": "hm_list",
+      "name": "市场游资最全名录",
+      "doc_url": "https://tushare.pro/document/2?doc_id=311",
+      "document_sha256": "7edc8765d6b7ac9c22b7b45b84888f4695880e96daefe086e53a91cab63667ed",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=311",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条数据，目前总量未超过500 积分：5000积分可以调取，积分获取办法请参阅 积分获取办法",
+        "涪陵广场路 西南地区，巨型打板游资，资金实力雄厚，出手频率不高，但尤好重仓大手笔出手，风格剽悍，经常单笔近亿，曾在美锦能源、泰禾集团、北斗星通上大手笔出手",
+        "徐晓 大手笔、低频率、资金实力雄厚、出手胜率极高，有主导热点板块龙头股趋势行情的能力 国元证券股份有限公司上海虹桥路证券营业部"
+      ],
+      "note": ""
+    },
+    {
+      "id": "312",
+      "api_name": "hm_detail",
+      "name": "游资交易每日明细",
+      "doc_url": "https://tushare.pro/document/2?doc_id=312",
+      "document_sha256": "644ca79589ebe4b77de98d61d77ce0cdbcccf8617da12969b6e6f65b11593bab",
+      "minimum_points": 10000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "insufficient_points",
+      "documented_rpm": null,
+      "configured_rpm": 30,
+      "rate_source": "insufficient_points",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=312",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最多提取2000条记录，可循环调取，总量不限制 积分：用户积10000积分可调取使用，积分获取办法请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "320",
+      "api_name": "ths_hot",
+      "name": "THS热榜",
+      "doc_url": "https://tushare.pro/document/2?doc_id=320",
+      "document_sha256": "669e1321914d74af94daa9b49da0a41d8bcd95fd208189332a3c74db47c4a057",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=320",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000条，可根据日期等参数循环获取全部数据 积分：用户积6000积分可调取使用，积分获取办法请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "321",
+      "api_name": "dc_hot",
+      "name": "DC热榜",
+      "doc_url": "https://tushare.pro/document/2?doc_id=321",
+      "document_sha256": "a4fc8541085ea6c9f11210210a2cf84ab3fa044480d84616f6e8f3b64fc2094f",
+      "minimum_points": 8000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=321",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大2000条，可根据日期等参数循环获取全部数据 积分：用户积8000积分可调取使用，积分获取办法请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "376",
+      "api_name": "tdx_index",
+      "name": "TDX概念板块分类",
+      "doc_url": "https://tushare.pro/document/2?doc_id=376",
+      "document_sha256": "95677900fca19f0e97357b34c887796f9a679b42838735a7ea1ce049011774a5",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=376",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大1000条数据，可根据日期参数循环提取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "377",
+      "api_name": "tdx_member",
+      "name": "TDX概念板块成分",
+      "doc_url": "https://tushare.pro/document/2?doc_id=377",
+      "document_sha256": "568d3ba0665d8da1beda81c9f08dd3548bf6a76fa6a395adc241b254e6d05304",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=377",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：开始日期2025-03-28，单次最大3000条数据，可以根据日期和板块代码循环提取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "378",
+      "api_name": "tdx_daily",
+      "name": "TDX概念板块行情",
+      "doc_url": "https://tushare.pro/document/2?doc_id=378",
+      "document_sha256": "8ad4453e257481e35cf5d0c3a223a8f0f64174a04d2564a0e67d6c0a748d1409",
+      "minimum_points": 6000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=378",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次提取最大3000条数据，可根据板块代码和日期参数循环提取 权限：用户积累6000积分可调取，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "347",
+      "api_name": "kpl_list",
+      "name": "榜单数据（KP）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=347",
+      "document_sha256": "2f2db125f54e864e7eb8e03b53644626dc6d39c7a736896a46ec5423e1227252",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "interface_document",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=347",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大8000条数据，可根据日期循环获取历史数据 积分：5000积分每分钟可以请求200次每天总量1万次，8000积分以上每分钟500次每天总量不限制，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    },
+    {
+      "id": "351",
+      "api_name": "kpl_concept_cons",
+      "name": "题材成分（KP）",
+      "doc_url": "https://tushare.pro/document/2?doc_id=351",
+      "document_sha256": "edec36641db6a1691d881e91057a912aa10d7bc33d5ec19061620221d7c508a0",
+      "minimum_points": 5000,
+      "permission_kind": "points",
+      "independent_permission": null,
+      "account_points": 8000,
+      "account_access": "points_satisfied",
+      "documented_rpm": 500,
+      "configured_rpm": 500,
+      "rate_source": "regular_points_table",
+      "daily_limit": null,
+      "quota_window": null,
+      "quota_scope": "this_collector_only",
+      "permission_verified": false,
+      "sources": [
+        "https://tushare.pro/document/2?doc_id=351",
+        "https://tushare.pro/document/1?doc_id=290"
+      ],
+      "evidence": [
+        "限量：单次最大3000条，可根据代码和日期循环获取全部数据 积分：5000积分可提取数据，具体请参阅 积分获取办法"
+      ],
+      "note": ""
+    }
+  ]
+}
