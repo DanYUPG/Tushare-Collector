@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import os
@@ -14,13 +13,15 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+import portalocker
 import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from .archive_navigation import ENTRY_DOMAINS
-from .artifacts import contained_file, copy_verified, json_cell, source_paths, sync_directory, verified_open
+from .artifacts import contained_file, copy_verified, json_cell, source_paths, verified_open
 from .datasets import RECIPES, scope_for
+from .filesystem import atomic_move, compact_identifier, ensure_path_length, sync_directory
 from .models import ENTRIES, CollectorError, absolute_directory, is_stock_code
 from .store import encode, now
 from .warehouse_export import export_options, reorganize_export
@@ -371,6 +372,7 @@ def stock_codes(values, *, historical=False):
 
 
 def write_json(path, value):
+    ensure_path_length(path)
     content = (encode(value) + "\n").encode()
     with path.open("xb") as stream:
         stream.write(content)
@@ -380,7 +382,7 @@ def write_json(path, value):
 
 
 def parquet_digest(path):
-    with path.open("rb") as stream:
+    with path.open("r+b") as stream:
         os.fsync(stream.fileno())
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
@@ -617,11 +619,16 @@ class DateWarehouse:
             if active:
                 raise CollectorError(f"{self.name}采集正在排队或运行，请完成采集后再整理仓库")
             root.mkdir(parents=True, exist_ok=True)
-            with (root / ".publish.lock").open("a") as lock:
-                try:
-                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                except BlockingIOError:
-                    raise CollectorError(f"其他进程正在整理此{self.name}仓库") from None
+            lock = portalocker.Lock(root / ".publish.lock", mode="a+b", timeout=0)
+            try:
+                lock.acquire()
+            except portalocker.AlreadyLocked:
+                raise CollectorError(f"其他进程正在整理此{self.name}仓库") from None
+            except portalocker.LockException as error:
+                raise CollectorError(
+                    f"仓库文件锁失败（{type(error).__name__}），请检查目录及文件系统"
+                ) from None
+            with lock:
                 snapshot = self.snapshot(root, repository_id)
                 changed, _ = self.changes(sources, snapshot)
                 if not changed:
@@ -649,7 +656,7 @@ class DateWarehouse:
         updates = defaultdict(dict)
         for day, item in changed.items():
             updates[day[:6]][day] = item
-        with tempfile.TemporaryDirectory(prefix=".refresh-", dir=root) as temporary:
+        with tempfile.TemporaryDirectory(prefix=".t-", dir=root) as temporary:
             staging = Path(temporary)
             (staging / "months").mkdir()
             for month, items in sorted(updates.items()):
@@ -696,7 +703,7 @@ class DateWarehouse:
             digest = write_json(staging / "manifest.json", manifest)
             sync_directory(staging / "months")
             sync_directory(staging)
-            staging.rename(final)
+            atomic_move(staging, final)
             sync_directory(parent)
         with self.store.connect() as db:
             db.execute(
@@ -724,12 +731,12 @@ class DateWarehouse:
             if item and item["raw_sha256"] == source["data_sha256"]:
                 floor = max(floor, [item["observed_at"], item["source_order"]])
             watermarks[day] = floor
-        temporary_pointer = root / f".current-{snapshot['snapshot_id']}.json"
+        temporary_pointer = root / f".c-{compact_identifier(snapshot['snapshot_id'])}.json"
         try:
             write_json(temporary_pointer, {
                 "snapshot_id": snapshot["snapshot_id"], "source_watermarks": watermarks,
             })
-            temporary_pointer.replace(root / "current.json")
+            atomic_move(temporary_pointer, root / "current.json", replace=True)
             sync_directory(root)
         finally:
             temporary_pointer.unlink(missing_ok=True)
@@ -834,14 +841,19 @@ class DateWarehouse:
         bundle_id = uuid.uuid4().hex
         final = parent / f"{self.dataset_id}-{bundle_id}"
         files, days, total = [], set(), 0
-        with tempfile.TemporaryDirectory(prefix=".bundle-", dir=parent) as temporary:
+        with tempfile.TemporaryDirectory(prefix=".t-", dir=parent) as temporary:
             staging = Path(temporary)
             (staging / "data").mkdir()
             for month in months:
                 table = self.filter(self.month_table(root, month), start, end, codes).select(columns)
                 if not table.num_rows:
                     continue
-                path = staging / "data" / f"{month['month']}.parquet"
+                file_id = (
+                    compact_identifier(month["month"])
+                    if self.adapter.engine in {"request", "record"} else month["month"]
+                )
+                path = staging / "data" / f"{file_id}.parquet"
+                ensure_path_length(path)
                 pq.write_table(table, path, compression="zstd")
                 files.append({
                     "file": f"data/{path.name}", "sha256": parquet_digest(path), "rows": table.num_rows,
@@ -888,7 +900,7 @@ class DateWarehouse:
             digest = write_json(staging / "manifest.json", manifest)
             sync_directory(staging / "data")
             sync_directory(staging)
-            staging.rename(final)
+            atomic_move(staging, final)
             sync_directory(parent)
         try:
             with self.store.connect() as db:
@@ -1021,7 +1033,7 @@ class SnapshotWarehouse(DateWarehouse):
         snapshot_id = uuid.uuid4().hex
         parent = root / "snapshots"
         parent.mkdir(exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix=".refresh-", dir=root) as temporary:
+        with tempfile.TemporaryDirectory(prefix=".t-", dir=root) as temporary:
             staging = Path(temporary)
             (staging / "months").mkdir()
             path = staging / "months" / "current.parquet"
@@ -1046,7 +1058,7 @@ class SnapshotWarehouse(DateWarehouse):
             sync_directory(staging / "months")
             sync_directory(staging)
             final = parent / snapshot_id
-            staging.rename(final)
+            atomic_move(staging, final)
             sync_directory(parent)
         with self.store.connect() as db:
             db.execute(

@@ -8,7 +8,8 @@ import stat
 import uuid
 from pathlib import Path
 
-from .artifacts import source_paths, sync_directory, verified_open
+from .artifacts import source_paths, verified_open
+from .filesystem import sync_directory
 from .models import CollectorError
 from .store import encode, now
 

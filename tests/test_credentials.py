@@ -39,7 +39,8 @@ class CredentialTests(unittest.TestCase):
             })
             self.assertEqual(response.json()["persistence"], "local_file")
             self.assertNotIn(TOKEN, response.text)
-            self.assertEqual(stat.S_IMODE(self.credentials.path.stat().st_mode), 0o600)
+            if os.name != "nt":
+                self.assertEqual(stat.S_IMODE(self.credentials.path.stat().st_mode), 0o600)
             self.assertEqual(self.credentials.load(), TOKEN)
             status = client.get("/api/status")
             self.assertTrue(status.json()["token_persisted"])
@@ -81,7 +82,7 @@ class CredentialTests(unittest.TestCase):
         app = self.app()
         with TestClient(app, base_url="http://localhost") as client:
             client.put("/api/credential", headers=HEADERS, json={"token": TOKEN, "remember": True})
-            with patch("collector.credentials.Path.replace", side_effect=PermissionError(TOKEN)):
+            with patch("collector.credentials.atomic_move", side_effect=PermissionError(TOKEN)):
                 response = client.put("/api/credential", headers=HEADERS, json={
                     "token": "replacement-test-only", "remember": True,
                 })
@@ -117,7 +118,20 @@ class CredentialTests(unittest.TestCase):
 
     def test_startup_rejects_insecure_links_and_corrupt_files_without_leaking_content(self):
         self.credentials.save(TOKEN)
-        self.credentials.path.chmod(0o644)
+        if os.name == "nt":
+            import ntsecuritycon
+            import win32security
+
+            acl = win32security.ACL()
+            everyone = win32security.CreateWellKnownSid(win32security.WinWorldSid, None)
+            acl.AddAccessAllowedAce(win32security.ACL_REVISION, ntsecuritycon.FILE_ALL_ACCESS, everyone)
+            win32security.SetNamedSecurityInfo(
+                str(self.credentials.path), win32security.SE_FILE_OBJECT,
+                win32security.DACL_SECURITY_INFORMATION | win32security.PROTECTED_DACL_SECURITY_INFORMATION,
+                None, None, acl, None,
+            )
+        else:
+            self.credentials.path.chmod(0o644)
         with self.assertRaisesRegex(CollectorError, "权限"):
             self.app()
         self.credentials.path.unlink()
@@ -134,6 +148,25 @@ class CredentialTests(unittest.TestCase):
             with self.assertRaises(CollectorError) as error:
                 self.app()
             self.assertNotIn(TOKEN, str(error.exception))
+
+    def test_temporary_name_collision_does_not_remove_an_existing_file_or_old_token(self):
+        self.credentials.save(TOKEN)
+        temporary = self.root / ".tushare-token.collision"
+        temporary.write_bytes(b"keep")
+        with patch("collector.credentials.uuid.uuid4") as identifier:
+            identifier.return_value.hex = "collision"
+            with self.assertRaises(CollectorError):
+                self.credentials.save("replacement-test-only")
+        self.assertEqual(temporary.read_bytes(), b"keep")
+        self.assertEqual(self.credentials.load(), TOKEN)
+
+    def test_hardlinked_credentials_are_rejected_without_changing_the_other_link(self):
+        self.credentials.save(TOKEN)
+        other = self.root / "other-link"
+        other.hardlink_to(self.credentials.path)
+        with self.assertRaises(CollectorError):
+            self.app()
+        self.assertEqual(other.read_bytes(), (TOKEN + "\n").encode())
 
 
 if __name__ == "__main__":

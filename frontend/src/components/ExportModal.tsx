@@ -188,22 +188,21 @@ export function ExportModal({
               </div>
               <ul className="list-disc pl-4 space-y-1 text-slate-600">
                 <li>
-                  <strong className="text-slate-800">只读组内 data/ 目录</strong>：按{" "}
-                  <code className="font-mono text-slate-800">
-                    &lt;api_name&gt;--entry-&lt;entry_id&gt;/variant-&lt;hash&gt;/schema-&lt;hash&gt;/
-                  </code>{" "}
-                  分组（两个 <code className="font-mono">pro_bar</code> 入口按{" "}
+                  <strong className="text-slate-800">按清单读取分组数据</strong>：从{" "}
+                  <code className="font-mono text-slate-800">manifest.json</code>{" "}
+                  的 <code className="font-mono">groups[].data_directory</code> 定位数据目录
+                  （两个 <code className="font-mono">pro_bar</code> 入口按{" "}
                   <code className="font-mono">entry_id</code> 独立隔离），组内{" "}
-                  <code className="font-mono text-teal-800">data/</code> 集中存放数据文件、
-                  <code className="font-mono text-slate-700">metadata/</code>{" "}
+                  <code className="font-mono text-teal-800">d/</code> 集中存放数据文件、
+                  <code className="font-mono text-slate-700">m/</code>{" "}
                   隔离存放原 <code className="font-mono">meta.json</code>，避免元数据混入下游读表扫描。
                 </li>
                 <li>
-                  <strong className="text-slate-800">完整原文件副本、不合并去重</strong>：导出不受当前页面搜索、列筛选或分页影响；文件名采用「实际请求条件短标签 + sliceUUID」，仅标识请求条件，不代表实际返回数据覆盖或连续性。
+                  <strong className="text-slate-800">完整原文件副本、不合并去重</strong>：导出不受当前页面搜索、列筛选或分页影响；目录与文件名使用内部短标识，完整接口、请求条件和原始切片标识保留在清单中，不代表实际数据覆盖。
                 </li>
                 <li>
                   <strong className="text-slate-800">字段结构核验与 JSON 隔离</strong>：Parquet 先复制校验 SHA256 再读取文件真实列结构分组（有归档声明则强制比对一致，旧 Parquet 无声明亦可读取真实结构）；无字段声明的 HTTP / 旧 JSON 标注为{" "}
-                  <code className="font-mono">schema-unknown</code> 并与 Parquet 隔离，JSON 仍保持原始响应结构不转换，需下游自行解析，不可直接当作统一业务表联合读取。
+                  <code className="font-mono">schema_status=unknown</code> 并与 Parquet 隔离，JSON 仍保持原始响应结构不转换，需下游自行解析，不可直接当作统一业务表联合读取。
                 </li>
                 <li>
                   <strong className="text-slate-800">统一清单 manifest.json</strong>：在新建{" "}
@@ -237,7 +236,7 @@ export function ExportModal({
                 value={destination}
                 disabled={busy || Boolean(result)}
                 onChange={(e) => setDestination(e.target.value)}
-                placeholder="/Users/.../exports"
+                placeholder="导出目录的绝对路径"
                 className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs font-mono text-slate-900 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-slate-50"
               />
               <button

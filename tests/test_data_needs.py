@@ -467,7 +467,7 @@ class DataNeedsTests(CollectorFixture):
                 write = pq.write_table
 
                 def corrupt(table, path, *args, **kwargs):
-                    if path.name == "current.parquet" or path.parent.name == "partitions":
+                    if path.name == "current.parquet" or path.parent.name == "p":
                         table = table.slice(0, 0)
                     return write(table, path, *args, **kwargs)
 

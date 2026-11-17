@@ -1,4 +1,3 @@
-import fcntl
 import hashlib
 import json
 import sqlite3
@@ -7,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
+import portalocker
 import test_warehouse
 from test_collector import CollectorFixture
 
@@ -211,8 +211,7 @@ class WarehouseCleanupTests(CollectorFixture):
         finally:
             self.warehouse.lock.release()
         root = self.warehouse.context()[0]
-        with (root / ".publish.lock").open("a") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with portalocker.Lock(root / ".publish.lock", mode="a+b", timeout=0):
             with self.assertRaisesRegex(CollectorError, "其他进程"):
                 preview_cleanup(self.warehouse)
         active = self.store.create_run(self.store.save_config(self.config(name="queued"))["id"])

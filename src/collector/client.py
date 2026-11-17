@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import uuid
+import tempfile
 from dataclasses import dataclass
 from functools import partial
 from importlib.metadata import version
@@ -15,6 +15,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from .filesystem import atomic_move, ensure_path_length, sync_directory
 from .store import encode
 
 API_URL = "https://api.tushare.pro"
@@ -256,12 +257,12 @@ def archive(
     if body is not None and metadata.get("transport") == "sdk":
         raise CollectionFailure("SDK 模式只接受 DataFrame，不回退到 JSON")
     parent = Path(raw_root) / "tushare/stocks" / entry["category"] / entry["api_name"] / run_id / slice_id
-    parent.mkdir(parents=True, exist_ok=True)
-    temporary = parent / f".{attempt_id}.{uuid.uuid4().hex}.tmp"
     destination = parent / attempt_id
-    temporary.mkdir()
-    raw_sha = None
     filename = "data.parquet" if metadata.get("transport") == "sdk" else "response.json"
+    ensure_path_length(destination / filename)
+    parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(tempfile.mkdtemp(prefix=".t-", dir=parent))
+    raw_sha = None
     schema, rows, pandas_dtypes = None, None, None
     has_data = frame is not None or body is not None
     if frame is not None:
@@ -282,7 +283,7 @@ def archive(
             stream.flush()
             os.fsync(stream.fileno())
     if has_data:
-        with (temporary / filename).open("rb") as stream:
+        with (temporary / filename).open("r+b") as stream:
             os.fsync(stream.fileno())
             raw_sha = hashlib.file_digest(stream, "sha256").hexdigest()
     meta = {
@@ -312,17 +313,9 @@ def archive(
         stream.write(content)
         stream.flush()
         os.fsync(stream.fileno())
-    descriptor = os.open(temporary, os.O_RDONLY)
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-    temporary.rename(destination)
-    descriptor = os.open(parent, os.O_RDONLY)
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
+    sync_directory(temporary)
+    atomic_move(temporary, destination)
+    sync_directory(parent)
     return {
         "raw_dir": str(destination),
         "raw_path": str(destination / filename) if has_data else None,

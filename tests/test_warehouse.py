@@ -1,6 +1,6 @@
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from unittest.mock import patch
 
 import pandas as pd
@@ -343,7 +343,7 @@ class WarehouseTests(CollectorFixture):
         with self.assertRaisesRegex(CollectorError, "重复股票"):
             self.warehouse.refresh()
         self.assertEqual(self.warehouse.status()["snapshot_id"], first["snapshot_id"])
-        self.assertEqual(list(self.root.rglob(".refresh-*")), [])
+        self.assertEqual(list(self.root.rglob(".t-*")), [])
 
     def test_failed_pointer_publication_preserves_old_current_and_releases_lock(self):
         self.daily("20260105")
@@ -352,7 +352,7 @@ class WarehouseTests(CollectorFixture):
         from collector.warehouse import write_json
 
         def fail_pointer(path, value):
-            if path.name.startswith(".current-"):
+            if path.name.startswith(".c-"):
                 raise PermissionError("fixture publication denied")
             return write_json(path, value)
 
@@ -1124,6 +1124,45 @@ class WarehouseTests(CollectorFixture):
         )
         self.assertEqual(len(reused), 1)
         self.assertEqual(warehouse.rows(snapshot_id=first["snapshot_id"])["matching_rows"], 3)
+
+    def test_compact_request_files_still_read_legacy_paths_and_keep_old_snapshots(self):
+        params = {"ts_code": "600000.SH", "start_date": "20260101", "end_date": "20260131"}
+        self.request_source("income", params, "legacy")
+        warehouse = self.request_warehouse("income")
+        first = warehouse.refresh()
+        root = Path(first["repository_root"])
+        path = Path(first["snapshot_manifest_path"])
+        manifest = json.loads(path.read_bytes())
+        item = manifest["months"][0]
+        original = root / item["file"]
+        legacy = root / "snapshots" / first["snapshot_id"] / "partitions" / f"{item['month']}.parquet"
+        legacy.parent.mkdir()
+        original.rename(legacy)
+        item["file"] = legacy.relative_to(root).as_posix()
+        content = (encode(manifest) + "\n").encode()
+        path.write_bytes(content)
+        with self.store.connect() as db:
+            db.execute(
+                "UPDATE warehouse_snapshots SET manifest_sha256=? WHERE id=?",
+                (hashlib.sha256(content).hexdigest(), first["snapshot_id"]),
+            )
+        old_rows = warehouse.rows()
+        self.request_source("income", {**params, "ts_code": "000001.SZ"}, "additional", value=9)
+        second = warehouse.refresh()
+        self.assertEqual(warehouse.rows(snapshot_id=first["snapshot_id"]), old_rows)
+        self.assertTrue(legacy.is_file())
+        self.assertNotEqual(warehouse.rows()["rows"], old_rows["rows"])
+        second_manifest = json.loads(Path(second["snapshot_manifest_path"]).read_bytes())
+        self.assertIn(
+            legacy.relative_to(root).as_posix(), [item["file"] for item in second_manifest["months"]],
+        )
+        relative = next(item["file"] for item in second_manifest["months"] if "/p/" in item["file"])
+        self.assertEqual(len(Path(relative).stem), 52)
+        windows_root = (
+            PureWindowsPath(r"C:\Users\Researcher\Documents\Tushare-Collector\data")
+            / "warehouse" / "income" / root.name
+        )
+        self.assertLess(len(str(windows_root / PureWindowsPath(relative))), 260)
 
     def test_request_windows_reject_overlap_and_narrowing_without_losing_current_data(self):
         params = {"ts_code": "600000.SH", "start_date": "20260101", "end_date": "20260131"}

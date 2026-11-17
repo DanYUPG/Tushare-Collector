@@ -3255,7 +3255,7 @@ export function DailyWarehouseView({
                         value={exportDestination}
                         disabled={exportBusy}
                         onChange={(e) => setExportDestination(e.target.value)}
-                        placeholder="/Users/.../exports"
+                        placeholder="导出目录的绝对路径"
                         className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-mono text-slate-900"
                       />
                       <button

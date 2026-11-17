@@ -52,7 +52,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    catalog = json.loads((ROOT / "src/collector/catalog.json").read_text())
+    catalog = json.loads((ROOT / "src/collector/catalog.json").read_text(encoding="utf-8"))
 
     def audit(entry):
         return {

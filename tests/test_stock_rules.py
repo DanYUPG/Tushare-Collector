@@ -160,7 +160,8 @@ class StockRuleTests(unittest.TestCase):
             "dividend": "f4598ff834bdd75372ffbba756afa9a6d879f31ed72ffddeb00cc85f745ebb9c",
             "moneyflow": "e9b2147924ed9ee26860bd6f212d81744dac8b2333611235f713ff49fc1c5b63",
         }
-        settings = DatasetSettings(raw_root="/collector-scope-regression")
+        # Preserve the historical POSIX identity, even when testing on Windows.
+        settings = DatasetSettings.model_construct(raw_root="/collector-scope-regression")
         for dataset, fingerprint in expected.items():
             self.assertEqual(scope_for(RECIPES[dataset], settings), fingerprint, dataset)
 

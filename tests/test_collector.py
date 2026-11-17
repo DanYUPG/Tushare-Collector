@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import io
 import json
@@ -9,7 +10,7 @@ import time
 import unittest
 from contextlib import redirect_stdout
 from decimal import Decimal
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -28,6 +29,7 @@ from collector.client import (
     TushareClient,
     validate_response,
 )
+from collector.filesystem import atomic_move
 from collector.models import CollectorError, TaskConfig, plan
 from collector.runner import Runner
 from collector.store import Store
@@ -894,11 +896,23 @@ class ArtifactTests(CollectorFixture):
             copied = Path(first["directory"]) / manifest["files"][0][file_key]
             self.assertEqual(copied.read_bytes(), Path(item[source_key]).read_bytes())
         self.assertEqual(Store(self.store.path).last_export_root(), destination)
-        self.assertEqual(list(Path(destination).rglob(".export-*")), [])
+        self.assertEqual(list(Path(destination).rglob(".t-*")), [])
         with self.assertRaisesRegex(CollectorError, "源归档"):
             export_data(self.store, run["id"], str(Path(item["raw_path"]).parent))
         with self.assertRaisesRegex(CollectorError, "绝对"):
             export_data(self.store, run["id"], "relative")
+
+    def test_archive_uses_a_short_same_parent_temporary_directory_without_changing_ids(self):
+        with patch("collector.client.atomic_move", wraps=atomic_move) as publish:
+            run, _ = self.run_config(self.config(), [response()])
+        temporary, destination = publish.call_args.args
+        self.assertEqual(temporary.parent, destination.parent)
+        self.assertLessEqual(len(temporary.name), 12)
+        self.assertNotIn(run["id"], temporary.name)
+        metadata = json.loads(Path(run["slices"][0]["meta_path"]).read_bytes())
+        self.assertEqual(destination.name, metadata["attempt_id"])
+        self.assertEqual(metadata["run_id"], run["id"])
+        self.assertEqual(metadata["slice_id"], run["slices"][0]["id"])
 
     def test_organized_export_groups_date_files_by_schema_and_preserves_bytes(self):
         frames = [
@@ -916,15 +930,21 @@ class ArtifactTests(CollectorFixture):
         root = Path(exported["directory"])
         manifest = json.loads(Path(exported["manifest_path"]).read_bytes())
         self.assertEqual(exported["layout"], "organized")
+        self.assertEqual(manifest["manifest_version"], 3)
         self.assertEqual(len(manifest["groups"]), 2)
         self.assertEqual(manifest["files"][0]["group_directory"], manifest["files"][1]["group_directory"])
         self.assertNotEqual(manifest["files"][1]["group_directory"], manifest["files"][2]["group_directory"])
         self.assertFalse(manifest["merged"])
         self.assertFalse(manifest["deduplicated"])
         for item, source in zip(manifest["files"], run["slices"], strict=True):
-            self.assertIn("daily--entry-27/", item["data_file"])
-            self.assertIn("/data/trade_date=", item["data_file"])
-            self.assertIn("/metadata/", item["meta_file"])
+            encoded = Path(item["data_file"]).stem
+            decoded = base64.b32decode(encoded.upper() + "=" * (-len(encoded) % 8)).hex()
+            self.assertEqual(decoded, source["id"])
+            self.assertIn("/d/", item["data_file"])
+            self.assertIn("/m/", item["meta_file"])
+            windows_root = PureWindowsPath(r"C:\out") / "tushare_exports" / root.name
+            for key in ("data_file", "meta_file"):
+                self.assertLessEqual(len(str(windows_root / PureWindowsPath(item[key]))), 160)
             self.assertEqual(item["params"], json.loads(source["params_json"]))
             for key, original in (("data_file", "raw_path"), ("meta_file", "meta_path")):
                 self.assertEqual((root / item[key]).read_bytes(), Path(source[original]).read_bytes())
@@ -936,6 +956,7 @@ class ArtifactTests(CollectorFixture):
         raw = export_data(self.store, run["id"], str(self.root / "output"))
         raw_manifest = json.loads(Path(raw["manifest_path"]).read_bytes())
         self.assertEqual(raw["layout"], "raw")
+        self.assertEqual(raw_manifest["manifest_version"], 2)
         self.assertTrue(raw_manifest["files"][0]["data_file"].startswith("000001-"))
         self.assertNotEqual(raw["directory"], exported["directory"])
 
@@ -968,7 +989,9 @@ class ArtifactTests(CollectorFixture):
         exported = export_data(self.store, qfq["id"], str(self.root / "output"), layout="organized")
         groups = json.loads(Path(exported["manifest_path"]).read_bytes())["groups"]
         self.assertEqual(len(groups), 2)
-        self.assertTrue(all(group["directory"].startswith("pro_bar--entry-146/") for group in groups))
+        self.assertTrue(
+            all(group["entry_id"] == "146" and group["api_name"] == "pro_bar" for group in groups)
+        )
         self.assertTrue(all(group["request_options"]["start_date"] == "20261101" for group in groups))
         self.assertEqual(
             {group["request_options"]["ts_code"] for group in groups}, {"600000.SH", "000001.SZ"}
@@ -1196,6 +1219,31 @@ class ArtifactTests(CollectorFixture):
             ):
                 with self.assertRaisesRegex(CollectorError, "目录选择失败"):
                     choose_directory()
+
+    def test_cross_platform_directory_picker_keeps_unicode_paths_and_reports_gui_failures(self):
+        selected = self.root / "中文目录"
+        selected.mkdir()
+        for platform in ("win32", "linux"):
+            with self.subTest(platform=platform), patch("collector.artifacts.sys.platform", platform):
+                with patch(
+                    "collector.artifacts.subprocess.run",
+                    return_value=subprocess.CompletedProcess([], 0, f"{selected}\n", ""),
+                ) as command:
+                    self.assertEqual(choose_directory(str(self.root))["path"], str(selected))
+                    self.assertEqual(command.call_args.args[0][-1], str(self.root))
+                    self.assertEqual(command.call_args.kwargs["encoding"], "utf-8")
+                    self.assertNotIn(str(self.root), command.call_args.args[0][-2])
+                with patch(
+                    "collector.artifacts.subprocess.run",
+                    return_value=subprocess.CompletedProcess([], 0, "\n", ""),
+                ):
+                    self.assertEqual(choose_directory(), {"cancelled": True, "path": None})
+                with patch(
+                    "collector.artifacts.subprocess.run",
+                    return_value=subprocess.CompletedProcess([], 1, "", "Tk is not available"),
+                ):
+                    with self.assertRaisesRegex(CollectorError, "目录选择失败.*手工"):
+                        choose_directory()
 
 
 class WebTests(unittest.TestCase):

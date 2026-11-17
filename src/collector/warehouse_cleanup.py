@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import re
@@ -9,6 +8,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import portalocker
 import pyarrow.parquet as pq
 
 from .archive_delete import CleanupBusy, cleanup_files, ensure_idle, ensure_unshared, registered_deletion_info
@@ -63,11 +63,14 @@ def locked_context(warehouse):
         root, repository_id, raw_root, _, _ = warehouse.context()
         if not root.is_dir():
             raise CollectorError("仓库尚未发布，不能清理 Raw")
-        with (root / ".publish.lock").open("a") as lock:
-            try:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError:
-                raise CleanupBusy("其他进程正在整理或清理此仓库") from None
+        lock = portalocker.Lock(root / ".publish.lock", mode="a+b", timeout=0)
+        try:
+            lock.acquire()
+        except portalocker.AlreadyLocked:
+            raise CleanupBusy("其他进程正在整理或清理此仓库") from None
+        except portalocker.LockException as error:
+            raise CollectorError(f"仓库文件锁失败（{type(error).__name__}），请检查目录及文件系统") from None
+        with lock:
             yield root, repository_id, raw_root
     finally:
         warehouse.lock.release()

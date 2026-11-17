@@ -155,7 +155,7 @@ def main():
     parser.add_argument("--evidence", type=Path, help="Use previously fetched official metadata")
     args = parser.parse_args()
     if args.evidence:
-        entries = json.loads(args.evidence.read_text())
+        entries = json.loads(args.evidence.read_text(encoding="utf-8"))
     else:
         sidebar = fetch(14).split('<div id="jstree">', 1)[1]
         groups = re.findall(

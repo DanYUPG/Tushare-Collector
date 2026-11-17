@@ -4,7 +4,6 @@ import hashlib
 import json
 import math
 import os
-import re
 import sqlite3
 import subprocess
 import sys
@@ -18,6 +17,7 @@ from pathlib import Path
 import pyarrow.parquet as pq
 
 from .client import reject_json_constant
+from .filesystem import atomic_move, compact_identifier, ensure_path_length, sync_directory
 from .models import CollectorError, absolute_directory
 from .store import Store, encode, now
 
@@ -26,8 +26,6 @@ DIRECTORY_DIALOG_LOCK = threading.Lock()
 
 
 def choose_directory(initial_path: str | None = None):
-    if sys.platform != "darwin":
-        raise CollectorError("原生目录选择当前仅支持 macOS；请手工填写绝对目录")
     initial = absolute_directory(initial_path, "选择") if initial_path else Path.home()
     while not initial.is_dir():
         initial = initial.parent
@@ -38,14 +36,28 @@ on run argv
     return POSIX path of selected
 end run
 """
+    command = ["osascript", "-e", script, str(initial)]
+    if sys.platform != "darwin":
+        script = """
+import sys
+from tkinter import Tk, filedialog
+
+root = Tk()
+root.withdraw()
+try:
+    print(filedialog.askdirectory(title="选择 Tushare 数据目录", initialdir=sys.argv[1], mustexist=True))
+finally:
+    root.destroy()
+"""
+        command = [sys.executable, "-X", "utf8", "-c", script, str(initial)]
     if not DIRECTORY_DIALOG_LOCK.acquire(blocking=False):
         raise CollectorError("已有目录选择窗口，请先完成或取消选择")
     try:
         try:
             result = subprocess.run(
-                ["osascript", "-e", script, str(initial)],
+                command,
                 capture_output=True,
-                text=True,
+                encoding="utf-8",
                 timeout=120,
                 check=False,
             )
@@ -56,8 +68,10 @@ end run
     if result.returncode:
         if "(-128)" in result.stderr:
             return {"cancelled": True, "path": None}
-        raise CollectorError(f"目录选择失败：{result.stderr.strip()[:300]}")
+        raise CollectorError(f"目录选择失败：{result.stderr.strip()[-300:]}；也可手工填写绝对目录")
     if not result.stdout.strip():
+        if sys.platform != "darwin":
+            return {"cancelled": True, "path": None}
         raise CollectorError("目录选择器未返回路径")
     return {"cancelled": False, "path": str(absolute_directory(result.stdout.strip(), "选择"))}
 
@@ -237,6 +251,7 @@ def preview_slice(
 
 
 def copy_verified(source: Path, target: Path, expected_hash: str):
+    ensure_path_length(target)
     digest = hashlib.sha256()
     with source.open("rb") as reader, target.open("xb") as writer:
         while chunk := reader.read(1024 * 1024):
@@ -246,21 +261,6 @@ def copy_verified(source: Path, target: Path, expected_hash: str):
         os.fsync(writer.fileno())
     if digest.hexdigest() != expected_hash:
         raise CollectorError(f"导出期间源文件发生变化或损坏：{source.name}")
-
-
-def sync_directory(path: Path):
-    descriptor = os.open(path, os.O_RDONLY)
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
-
-
-def export_component(value: str) -> str:
-    component = re.sub(r"[^A-Za-z0-9_.-]", "_", value).strip(".")
-    if not component:
-        raise CollectorError("导出文件名缺少有效标识")
-    return component[:100]
 
 
 def organized_export_group(entry, item, metadata, parquet_schema=None):
@@ -302,16 +302,18 @@ def organized_export_group(entry, item, metadata, parquet_schema=None):
         schema = parquet_schema
     variant_id = hashlib.sha256(encode(variant).encode()).hexdigest()
     schema_id = hashlib.sha256(encode(schema).encode()).hexdigest() if schema is not None else "unknown"
-    relative = (
-        Path(f"{export_component(entry['api_name'])}--entry-{export_component(entry['id'])}")
-        / f"variant-{variant_id}" / f"schema-{schema_id}"
-    )
+    identity = {
+        "entry_id": entry["id"], "api_name": entry["api_name"],
+        "variant_id": variant_id, "schema_id": schema_id,
+    }
+    group_id = hashlib.sha256(encode(identity).encode()).hexdigest()
+    relative = Path("g-" + compact_identifier(group_id))
     return {
+        **identity,
+        "group_id": group_id,
         "directory": relative.as_posix(),
-        "data_directory": (relative / "data").as_posix(),
-        "metadata_directory": (relative / "metadata").as_posix(),
-        "variant_id": variant_id,
-        "schema_id": schema_id,
+        "data_directory": (relative / "d").as_posix(),
+        "metadata_directory": (relative / "m").as_posix(),
         "schema": schema,
         "schema_status": (
             "verified_parquet" if parquet_schema is not None
@@ -338,11 +340,12 @@ def export_data(
         raise CollectorError("导出目录不能位于源归档的切片目录内")
     export_id = uuid.uuid4().hex
     parent = root / "tushare_exports"
-    parent.mkdir(parents=True, exist_ok=True)
     final = parent / f"export-{export_id}"
+    ensure_path_length(final / "manifest.json")
+    parent.mkdir(parents=True, exist_ok=True)
     files = []
     groups = {}
-    with tempfile.TemporaryDirectory(prefix=".export-", dir=parent) as temporary:
+    with tempfile.TemporaryDirectory(prefix=".t-", dir=parent) as temporary:
         staging = Path(temporary)
         for item, raw, meta, metadata in sources:
             group = None
@@ -354,7 +357,8 @@ def export_data(
                     ("params", params),
                 )):
                     raise CollectorError("归档元数据的来源或请求条件与登记不一致，不能整理导出")
-                verified_data = staging / f".verified-{export_component(item['id'])}{raw.suffix}"
+                filename = compact_identifier(item["id"])
+                verified_data = staging / f".v-{filename}{raw.suffix}"
                 copy_verified(raw, verified_data, item["raw_sha256"])
                 parquet_schema = [
                     {"name": field.name, "type": str(field.type), "nullable": field.nullable}
@@ -362,21 +366,15 @@ def export_data(
                 ] if raw.suffix == ".parquet" else None
                 group = organized_export_group(run["entry"], item, metadata, parquet_schema)
                 groups.setdefault(group["directory"], group)
-                label = "__".join(
-                    f"{key}={export_component(str(params[key]))}"
-                    for key in (
-                        "trade_date", "cal_date", "ann_date", "period", "month", "start_date", "end_date",
-                        "ts_code", "exchange", "freq", "adj",
-                    )
-                    if key in params and isinstance(params[key], (str, int, float, bool))
-                )[:100]
-                filename = f"{label + '__' if label else ''}{export_component(item['id'])}"
                 data_relative = Path(group["data_directory"]) / (filename + raw.suffix)
-                meta_relative = Path(group["metadata_directory"]) / f"{export_component(item['id'])}.json"
+                meta_relative = Path(group["metadata_directory"]) / f"{filename}.json"
             else:
                 relative = Path(f"{item['ordinal'] + 1:06d}-{item['id']}")
                 data_relative, meta_relative = relative / raw.name, relative / meta.name
             data_target, meta_target = staging / data_relative, staging / meta_relative
+            for relative in (data_relative, meta_relative):
+                ensure_path_length(staging / relative)
+                ensure_path_length(final / relative)
             data_target.parent.mkdir(parents=True, exist_ok=True)
             meta_target.parent.mkdir(parents=True, exist_ok=True)
             if verified_data is not None:
@@ -419,7 +417,7 @@ def export_data(
                 }
             )
         manifest = {
-            "manifest_version": 2,
+            "manifest_version": 3 if layout == "organized" else 2,
             "layout": layout,
             "export_id": export_id,
             "run_id": run_id,
@@ -434,7 +432,7 @@ def export_data(
             "deduplicated": False,
             "groups": list(groups.values()),
             "warnings": [
-                "文件名表示请求条件，不是实际数据覆盖；登记行数可能含重复。",
+                "目录与文件名为内部标识，完整请求条件见清单；不表示实际数据覆盖，登记行数可能含重复。",
                 "JSON 保持原响应格式；未知字段结构未核定兼容性，不应直接当作统一业务表。",
                 "分组不保证业务主键唯一、数据连续或复权序列一致，不自动选取最新修订。",
             ] if layout == "organized" else [],
@@ -447,7 +445,7 @@ def export_data(
             os.fsync(stream.fileno())
         for directory, _, _ in os.walk(staging, topdown=False):
             sync_directory(Path(directory))
-        staging.rename(final)
+        atomic_move(staging, final)
         sync_directory(parent)
     manifest_path = final / "manifest.json"
     digest = hashlib.sha256(content).hexdigest()

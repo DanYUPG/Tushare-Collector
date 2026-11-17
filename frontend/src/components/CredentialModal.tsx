@@ -83,7 +83,8 @@ export function CredentialModal({
               <p className="font-semibold">明文保存风险</p>
               <p>记住 Token 会将其保存为未加密的本机文件，重启自动加载。任何能读取该文件的人或程序都能直接获得 Token；
                 同一账户下的恶意程序、管理员，以及备份或云同步副本均可能造成泄漏。</p>
-              <p>600 权限仅限制访问，.gitignore 仅减少误提交，都不等于加密。请勿分享凭证文件或整个个人数据目录。
+              <p>文件权限（macOS / Linux 为 600，Windows 为当前用户专属 ACL）仅限制访问，.gitignore 仅减少误提交，
+                都不等于加密。请勿分享凭证文件或整个个人数据目录。
                 如有顾虑，请不勾选“记住 Token”，仅在当前进程使用。</p>
             </div>
           </div>

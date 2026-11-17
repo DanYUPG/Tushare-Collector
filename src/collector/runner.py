@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fcntl
 import json
 import logging
 import random
@@ -8,6 +7,8 @@ import threading
 import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor
 from concurrent.futures import wait as wait_futures
+
+import portalocker
 
 from .client import (
     CollectionFailure,
@@ -152,18 +153,29 @@ class Runner:
         }
 
     def start(self):
-        self.lock = (self.store.path.parent / ".collector-worker.lock").open("a+b")
+        lock = portalocker.Lock(
+            self.store.path.parent / ".collector-worker.lock", mode="a+b", timeout=0,
+        )
         try:
-            fcntl.flock(self.lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            self.lock.close()
-            self.lock = None
+            lock.acquire()
+        except portalocker.AlreadyLocked:
             raise RuntimeError(
                 "此 SQLite 目录已有拉取器进程；请勿启动多个服务进程，采集线程数请在设置中配置"
             ) from None
-        self.store.recover()
-        self.thread = threading.Thread(target=self.loop, name="tushare-collector", daemon=False)
-        self.thread.start()
+        except portalocker.LockException as error:
+            raise RuntimeError(
+                f"无法锁定采集控制目录（{type(error).__name__}），请检查目录及文件系统"
+            ) from None
+        self.lock = lock
+        try:
+            self.store.recover()
+            self.thread = threading.Thread(target=self.loop, name="tushare-collector", daemon=False)
+            self.thread.start()
+        except BaseException:
+            lock.release()
+            self.lock = None
+            self.thread = None
+            raise
 
     def close(self):
         self.stopping.set()
@@ -171,8 +183,7 @@ class Runner:
         if self.thread:
             self.thread.join()
         if self.lock:
-            fcntl.flock(self.lock.fileno(), fcntl.LOCK_UN)
-            self.lock.close()
+            self.lock.release()
             self.lock = None
 
     def check_stop(self, run_id: str):

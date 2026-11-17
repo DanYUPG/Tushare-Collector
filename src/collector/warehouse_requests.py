@@ -9,9 +9,10 @@ from pathlib import Path
 
 import pyarrow.parquet as pq
 
-from .artifacts import json_cell, source_paths, sync_directory, verified_open
+from .artifacts import json_cell, source_paths, verified_open
 from .client import CollectionFailure, Response
 from .datasets import RECIPES, scope_for, validate_dataset_response
+from .filesystem import atomic_move, compact_identifier, ensure_path_length, sync_directory
 from .models import CollectorError
 from .store import encode, now
 from .warehouse import MAX_MONTH_ROWS, DateWarehouse, date_key, parquet_digest, readback_receipt, write_json
@@ -150,9 +151,9 @@ class RequestWarehouse(DateWarehouse):
         parent.mkdir(exist_ok=True)
         dates = dict(snapshot["dates"]) if snapshot else {}
         files = {item["month"]: item for item in snapshot["months"]} if snapshot else {}
-        with tempfile.TemporaryDirectory(prefix=".refresh-", dir=root) as temporary:
+        with tempfile.TemporaryDirectory(prefix=".t-", dir=root) as temporary:
             staging = Path(temporary)
-            (staging / "partitions").mkdir()
+            (staging / "p").mkdir()
             for partition, item in sorted(changed.items()):
                 table, source = self.source_table(partition, item, require_all_fields=verify_content)
                 previous = dates.get(partition)
@@ -162,13 +163,14 @@ class RequestWarehouse(DateWarehouse):
                 ):
                     raise CollectorError("同一请求分区的范围收窄会丢失已有记录，未发布；请补采原完整范围")
                 dates[partition] = source
-                path = staging / "partitions" / f"{partition}.parquet"
+                path = staging / "p" / f"{compact_identifier(partition)}.parquet"
+                ensure_path_length(path)
                 pq.write_table(table, path, compression="zstd")
                 receipt = readback_receipt(table, path, verify_content)
                 files[partition] = {
                     "month": partition, "label": source["partition_key"], "kind": "request_partition",
                     "rows": table.num_rows, "days": len(source["data_dates"]),
-                    "file": f"snapshots/{snapshot_id}/partitions/{path.name}",
+                    "file": f"snapshots/{snapshot_id}/p/{path.name}",
                     "sha256": parquet_digest(path),
                     **receipt,
                 }
@@ -187,10 +189,10 @@ class RequestWarehouse(DateWarehouse):
                 **self.manifest_metadata(sources),
             }
             digest = write_json(staging / "manifest.json", manifest)
-            sync_directory(staging / "partitions")
+            sync_directory(staging / "p")
             sync_directory(staging)
             final = parent / snapshot_id
-            staging.rename(final)
+            atomic_move(staging, final)
             sync_directory(parent)
         with self.store.connect() as db:
             db.execute(
