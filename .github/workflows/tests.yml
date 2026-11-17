@@ -28,7 +28,7 @@ jobs:
           cache: npm
       - run: uv sync --locked --extra dev
       - run: uv run --locked ruff check src scripts tests
-      - run: uv run --locked python -m unittest discover -s tests -q
+      - run: uv run --locked python -m unittest discover -s tests -q --failfast
       - run: npm ci
       - run: npm run check
       - run: npm test

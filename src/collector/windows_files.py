@@ -29,8 +29,11 @@ def long_paths_enabled():
 
 
 def current_user_sid():
-    with win32security.OpenProcessToken(win32api.GetCurrentProcess(), win32con.TOKEN_QUERY) as token:
+    token = win32security.OpenProcessToken(win32api.GetCurrentProcess(), win32con.TOKEN_QUERY)
+    try:
         return win32security.GetTokenInformation(token, win32security.TokenUser)[0]
+    finally:
+        token.Close()
 
 
 def _private_attributes(user):
@@ -79,7 +82,7 @@ def private_file(path: Path, *, create: bool = False):
         handle = win32file.CreateFile(
             str(path), access, 0, _private_attributes(user) if create else None,
             win32con.CREATE_NEW if create else win32con.OPEN_EXISTING,
-            win32con.FILE_FLAG_OPEN_REPARSE_POINT, None,
+            win32file.FILE_FLAG_OPEN_REPARSE_POINT, None,
         )
         created = create
         try:
@@ -105,9 +108,9 @@ def private_file(path: Path, *, create: bool = False):
 
 
 def move_file(source: Path, destination: Path, *, replace: bool):
-    flags = win32con.MOVEFILE_WRITE_THROUGH
+    flags = win32file.MOVEFILE_WRITE_THROUGH
     if replace:
-        flags |= win32con.MOVEFILE_REPLACE_EXISTING
+        flags |= win32file.MOVEFILE_REPLACE_EXISTING
     deadline = time.monotonic() + 1
     while True:
         try:

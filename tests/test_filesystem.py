@@ -114,7 +114,7 @@ else:
     @unittest.skipUnless(os.name == "nt", "Windows native file publication")
     def test_windows_move_retries_sharing_conflicts_without_copy_fallback(self):
         import pywintypes
-        import win32con
+        import win32file
         import winerror
 
         from collector.windows_files import move_file
@@ -132,7 +132,7 @@ else:
             move.call_args.args,
             (
                 str(source), str(destination),
-                win32con.MOVEFILE_REPLACE_EXISTING | win32con.MOVEFILE_WRITE_THROUGH,
+                win32file.MOVEFILE_REPLACE_EXISTING | win32file.MOVEFILE_WRITE_THROUGH,
             ),
         )
         for code in (winerror.ERROR_ACCESS_DENIED, winerror.ERROR_NOT_SAME_DEVICE):
