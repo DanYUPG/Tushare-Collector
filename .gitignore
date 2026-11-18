@@ -21,6 +21,9 @@ node_modules/
 .vite/
 *.tsbuildinfo
 
+# Local UI experiments and historical prototypes
+/prototypes/
+
 # Local data, exports, and SQLite runtime files
 /data/
 /raw/
