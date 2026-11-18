@@ -4,10 +4,12 @@ from pathlib import Path, PureWindowsPath
 from unittest.mock import patch
 
 import pandas as pd
+import portalocker
 import pyarrow as pa
 import pyarrow.parquet as pq
 from fastapi.testclient import TestClient
 from test_collector import CollectorFixture
+from tushare_warehouse import Warehouse
 
 from collector.app import create_app
 from collector.archive_delete import check_deletion, delete_archive
@@ -32,6 +34,7 @@ from collector.warehouse import (
     warehouse_catalog,
 )
 from collector.warehouse_export import reorganize_export
+from collector.warehouse_metadata import prepare_warehouse, register_repository
 from collector.warehouse_requests import RequestWarehouse
 
 
@@ -112,6 +115,76 @@ class WarehouseTests(CollectorFixture):
         self.assertEqual(repeated["snapshot_id"], second["snapshot_id"])
         with self.store.connect() as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM warehouse_snapshots").fetchone()[0], 2)
+
+    def test_sdk_reads_real_published_snapshots_and_reused_files_without_sqlite(self):
+        self.daily("20151231")
+        self.daily("20160104", 2)
+        first = self.warehouse.refresh()
+        reader = Warehouse(self.root)
+        batches = reader.read_batches("daily", cols=["close"], batch_size=1)
+        self.daily("20151231", 9)
+        self.warehouse.refresh()
+        with patch.object(self.store, "connect", side_effect=AssertionError("SDK must not access SQLite")):
+            with batches:
+                self.assertEqual(batches.read_all()["close"].to_pylist(), [1, 1, 2, 2])
+            latest = reader.read_file("daily", cols=["close"])
+            self.assertEqual(latest["close"].tolist(), [9, 9, 2, 2])
+            old = reader.read_file("daily", snapshot_id=first["snapshot_id"], cols=["close"])
+            self.assertEqual(old["close"].tolist(), [1, 1, 2, 2])
+
+    def test_sdk_metadata_backfill_uses_registered_hashes_without_rewriting_data(self):
+        data_dir = self.store.path.parent
+        self.warehouse = DailyWarehouse(self.store, self.service, data_dir / "warehouse" / "daily")
+        self.daily("20260105")
+        first = self.warehouse.refresh()
+        self.daily("20260202", 2)
+        second = self.warehouse.refresh()
+        root = Path(second["repository_root"])
+        files = {
+            path: path.read_bytes() for path in root.rglob("*")
+            if path.name == "manifest.json" or path.suffix == ".parquet"
+        }
+        for path in root.rglob("manifest.sha256"):
+            path.unlink()
+        (data_dir / "warehouse" / "catalog.json").unlink()
+        current = root / "current.json"
+        value = json.loads(current.read_bytes())
+        value.pop("manifest_sha256")
+        current.write_text(encode(value), encoding="utf-8")
+        self.assertEqual(prepare_warehouse(data_dir), {"snapshots": 2, "repositories": 1})
+        self.assertEqual(prepare_warehouse(data_dir), {"snapshots": 2, "repositories": 1})
+        self.assertTrue(all(path.read_bytes() == original for path, original in files.items()))
+        reader = Warehouse(data_dir / "warehouse")
+        self.assertEqual(len(reader.read_file("daily")), 4)
+        self.assertEqual(len(reader.read_file("daily", snapshot_id=first["snapshot_id"])), 2)
+
+    def test_sdk_catalog_registration_keeps_other_tables_during_concurrent_publication(self):
+        from concurrent.futures import ThreadPoolExecutor
+
+        root = self.root / "warehouse"
+        repositories = [(f"table_{index}", root / f"table_{index}" / f"{index:064x}") for index in range(8)]
+        for _, repository in repositories:
+            repository.mkdir(parents=True)
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            list(executor.map(lambda item: register_repository(item[1], item[0]), repositories))
+        reader = Warehouse(root)
+        self.assertEqual(reader.list_tables(), sorted(table for table, _ in repositories))
+
+    def test_sdk_metadata_backfill_refuses_active_collector_and_damaged_snapshot(self):
+        data_dir = self.store.path.parent
+        self.warehouse = DailyWarehouse(self.store, self.service, data_dir / "warehouse" / "daily")
+        self.daily("20260105")
+        snapshot = self.warehouse.refresh()
+        catalog = data_dir / "warehouse" / "catalog.json"
+        original_catalog = catalog.read_bytes()
+        with portalocker.Lock(data_dir / ".collector-worker.lock", mode="a+b", timeout=0):
+            with self.assertRaisesRegex(CollectorError, "停止采集服务"):
+                prepare_warehouse(data_dir)
+        path = Path(snapshot["snapshot_manifest_path"])
+        path.write_bytes(path.read_bytes() + b" ")
+        with self.assertRaisesRegex(CollectorError, "哈希"):
+            prepare_warehouse(data_dir)
+        self.assertEqual(catalog.read_bytes(), original_catalog)
 
     def test_raw_deletion_does_not_delete_published_copy(self):
         self.daily("20260105", 1)
@@ -742,6 +815,9 @@ class WarehouseTests(CollectorFixture):
         self.stock_snapshot("first")
         first = warehouse.refresh()
         self.assertEqual((first["partitions"], first["rows"], first["days"]), (15, 3, 0))
+        sdk = Warehouse(self.root)
+        self.assertEqual(len(sdk.read_file("stock_basic")), 3)
+        self.assertEqual(sdk.describe("stock_basic")["storage_layout"], "current_snapshot")
         self.assertIsNone(first["first_date"])
         self.assertEqual(first["months"][0]["month"], "current")
         self.stock_snapshot("second")
@@ -1092,6 +1168,12 @@ class WarehouseTests(CollectorFixture):
                 warehouse = self.request_warehouse(dataset)
                 status = warehouse.refresh()
                 self.assertEqual((status["partitions"], status["rows"], status["days"]), (1, 1, 1))
+                sdk = Warehouse(self.root / "warehouse")
+                self.assertEqual(len(sdk.read_file(dataset)), 1)
+                self.assertEqual(
+                    sdk.read_file(dataset, snapshot_id=status["snapshot_id"]).attrs["snapshot_id"],
+                    status["snapshot_id"],
+                )
                 self.assertEqual(status["storage_layout"], "request_partitions")
                 self.assertEqual(warehouse.rows()["matching_rows"], 1)
                 bundle = warehouse.export(str(self.root / "output"), "20260101", "20260131")

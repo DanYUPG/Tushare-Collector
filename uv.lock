@@ -1239,6 +1239,7 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "ruff" },
+    { name = "tushare-warehouse-sdk" },
 ]
 
 [package.metadata]
@@ -1252,9 +1253,25 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
     { name = "six", specifier = ">=1.16,<2" },
     { name = "tushare", specifier = "==1.4.29" },
+    { name = "tushare-warehouse-sdk", marker = "extra == 'dev'", editable = "sdk" },
     { name = "uvicorn", specifier = ">=0.30,<1" },
 ]
 provides-extras = ["dev"]
+
+[[package]]
+name = "tushare-warehouse-sdk"
+version = "0.1.0"
+source = { editable = "sdk" }
+dependencies = [
+    { name = "pandas" },
+    { name = "pyarrow" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pandas", specifier = ">=2,<4" },
+    { name = "pyarrow", specifier = ">=18" },
+]
 
 [[package]]
 name = "typing-extensions"

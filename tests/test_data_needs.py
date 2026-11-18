@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from test_collector import CollectorFixture, fast_forward_wait
 from test_datasets import frame_for
 from test_stock_rules import catalog_frame
+from tushare_warehouse import Warehouse
 
 from collector.app import create_app
 from collector.archive_delete import ensure_idle
@@ -170,6 +171,13 @@ class DataNeedsTests(CollectorFixture):
                     variants = status.get("variants", [])
                     rows = warehouse.rows(**({"variant_id": variants[0]["id"]} if variants else {}))
                     self.assertGreater(rows["matching_rows"], 0)
+                    sdk = Warehouse(self.store.path.parent / "warehouse")
+                    arrow = sdk.read_file(
+                        dataset_id, snapshot_id=status["snapshot_id"], as_arrow=True,
+                        variant_id=variants[0]["id"] if variants else None,
+                    )
+                    self.assertEqual(arrow.num_rows, rows["matching_rows"])
+                    self.assertEqual(arrow.column_names, rows["columns"])
                     if dataset_id in RECORD_WAREHOUSE_DATASETS:
                         bundle = warehouse.export(
                             str(self.root / "output"), None, None,

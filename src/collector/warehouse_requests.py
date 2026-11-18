@@ -16,6 +16,7 @@ from .filesystem import atomic_move, compact_identifier, ensure_path_length, syn
 from .models import CollectorError
 from .store import encode, now
 from .warehouse import MAX_MONTH_ROWS, DateWarehouse, date_key, parquet_digest, readback_receipt, write_json
+from .warehouse_metadata import snapshot_checksum
 
 DATE_PARAMS = {"start_date", "end_date", "trade_date", "ann_date", "period", "month"}
 
@@ -189,6 +190,7 @@ class RequestWarehouse(DateWarehouse):
                 **self.manifest_metadata(sources),
             }
             digest = write_json(staging / "manifest.json", manifest)
+            snapshot_checksum(staging, digest)
             sync_directory(staging / "p")
             sync_directory(staging)
             final = parent / snapshot_id

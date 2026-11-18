@@ -20,7 +20,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["ruff>=0.8"]
+dev = ["ruff>=0.8", "tushare-warehouse-sdk"]
+
+[tool.uv.sources]
+tushare-warehouse-sdk = { path = "sdk", editable = true }
 
 [project.scripts]
 tushare-collector = "collector.app:main"

@@ -27,7 +27,8 @@ jobs:
           node-version: "22"
           cache: npm
       - run: uv sync --locked --extra dev
-      - run: uv run --locked ruff check src scripts tests
+      - run: uv run --locked ruff check src scripts tests sdk
+      - run: uv run --isolated --no-project --with ./sdk python -m unittest discover -s sdk/tests -q --failfast
       - run: uv run --locked python -m unittest discover -s tests -q --failfast
       - run: npm ci
       - run: npm run check

@@ -12,6 +12,7 @@
 - [第一次采集](#第一次采集)
 - [管理数据需求和自动维护](#管理数据需求和自动维护)
 - [浏览与导出](#浏览与导出)
+- [通过 Python SDK 读取](#通过-python-sdk-读取)
 - [单次查询与自定义 API](#单次查询与自定义-api)
 - [查看运行和处理失败](#查看运行和处理失败)
 - [数据保存在哪里](#数据保存在哪里)
@@ -149,6 +150,41 @@ Windows 记住凭证需要支持 ACL 的本地文件系统，例如 NTFS；不�
 
 “后处理友好”按接口入口、请求选项和字段结构分组。新包使用短标识命名，从 `manifest.json` 的 `groups[].data_directory` 定位数据目录；`d/` 放数据，`m/` 放元数据。完整请求条件和来源标识保留在清单中。**只整理副本，不合并、不去重、不转换 JSON。** 不要根据文件名猜测数据覆盖或直接混读不同分组。
 
+## 通过 Python SDK 读取
+
+独立只读 SDK 位于 [`sdk/`](sdk/README.md)，不需要安装或启动采集服务，也不需要 Token。使用 Python 3.11+，在策略项目的 Python 环境中安装：
+
+```bash
+# 已下载本项目时，从项目根目录安装。
+python -m pip install ./sdk
+
+# 也可直接从 GitHub 安装 SDK 子项目，需要本机已安装 Git。
+python -m pip install "git+https://github.com/DanYUPG/Tushare-Collector.git#subdirectory=sdk"
+```
+
+**安装包不包含数据。** SDK 需要访问已发布的 `warehouse` 目录，默认位于 `<项目目录>/data/warehouse`；若采集器指定了 `--data-dir` 或 `TC_DATA_DIR`，则使用 `<实际控制目录>/warehouse`。不要传 Raw 目录或某个快照目录。
+
+```python
+from tushare_warehouse import Warehouse
+
+warehouse = Warehouse(r"C:\TushareData\warehouse")
+df = warehouse.read_file(
+    "daily",
+    cols=["ts_code", "trade_date", "close"],
+    filters=[("trade_date", ">", "20200101"), ("close", ">", 10)],
+)
+```
+
+SDK 默认返回 pandas DataFrame，支持 Arrow、分批读取、指定历史快照及请求变体，只读已发布版本，不扫描拼接历史文件。
+
+**已有仓库若缺少 `catalog.json`，先正常停止采集服务**，再从本项目根目录补建索引；此处传控制目录，不是其下的 `warehouse`：
+
+```bash
+uv run --locked python -m collector.warehouse_metadata --data-dir "C:\TushareData"
+```
+
+该操作不联网、不重新下载、不重写 Parquet；完成后可重新启动原服务。使用默认控制目录时，将参数改为 `--data-dir ./data`。安装包分发、跨机器只读接入及过滤规则见 [SDK 使用手册](sdk/README.md)。
+
 ## 单次查询与自定义 API
 
 不需要长期维护时，可以使用“**高级工具**”：
@@ -186,7 +222,7 @@ Windows 记住凭证需要支持 ACL 的本地文件系统，例如 NTFS；不�
 
 ## 数据保存在哪里
 
-`--data-dir` 指定的是**控制目录**，默认是项目下的 `data/`：
+`--data-dir` 指定的是**控制目录**，默认是项目下的 `data/`；也可通过启动环境变量 `TC_DATA_DIR` 指定，命令行参数优先。下表均为控制目录内的相对位置：
 
 | 位置 | 内容 |
 |---|---|
@@ -195,6 +231,8 @@ Windows 记住凭证需要支持 ACL 的本地文件系统，例如 NTFS；不�
 | `raw/` | 默认原始采集归档位置 |
 | `warehouse/` | 已发布的本地仓库和历史快照 |
 | `exports/` | 默认导出位置；也可以另选目标目录 |
+
+例如控制目录是 `C:\TushareData`，仓库就是 `C:\TushareData\warehouse`；默认启动时是 `<项目目录>/data/warehouse`。仅采集 Raw 不代表已经生成仓库，需完成数据需求发布或整理成功归档。SDK 传入仓库根目录，由索引定位各表和快照，不需要手工填写内部哈希目录。
 
 采集 Raw 目录可在对应采集设置或自定义任务中单独指定。已有需求绑定其保存时的目录与规则；改目录后应核查并重新保存需求，不会自动搬迁旧数据。
 

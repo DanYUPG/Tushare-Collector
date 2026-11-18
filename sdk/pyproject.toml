@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tushare-warehouse-sdk"
+version = "0.1.0"
+description = "Read-only Python SDK for published Tushare Collector warehouse snapshots"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["pyarrow>=18", "pandas>=2,<4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

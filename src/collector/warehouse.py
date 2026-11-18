@@ -25,6 +25,7 @@ from .filesystem import atomic_move, compact_identifier, ensure_path_length, syn
 from .models import ENTRIES, CollectorError, absolute_directory, is_stock_code
 from .store import encode, now
 from .warehouse_export import export_options, reorganize_export
+from .warehouse_metadata import register_repository, snapshot_checksum
 
 MAX_MONTH_ROWS = 1_000_000
 ARROW_TYPES = {"str": pa.string(), "float": pa.float64(), "int": pa.int64(), "datetime": pa.timestamp("ns")}
@@ -701,6 +702,7 @@ class DateWarehouse:
                 "coverage": "not_proven",
             }
             digest = write_json(staging / "manifest.json", manifest)
+            snapshot_checksum(staging, digest)
             sync_directory(staging / "months")
             sync_directory(staging)
             atomic_move(staging, final)
@@ -734,10 +736,12 @@ class DateWarehouse:
         temporary_pointer = root / f".c-{compact_identifier(snapshot['snapshot_id'])}.json"
         try:
             write_json(temporary_pointer, {
+                "format_version": 1, "manifest_sha256": snapshot["manifest_sha256"],
                 "snapshot_id": snapshot["snapshot_id"], "source_watermarks": watermarks,
             })
             atomic_move(temporary_pointer, root / "current.json", replace=True)
             sync_directory(root)
+            register_repository(root, snapshot.get("dataset_id", "daily"))
         finally:
             temporary_pointer.unlink(missing_ok=True)
         return watermarks
@@ -1043,6 +1047,7 @@ class SnapshotWarehouse(DateWarehouse):
                 "format_version": 1, "snapshot_id": snapshot_id, "created_at": now(),
                 "source_raw_root": raw_root, "api_name": self.api_name, "entry_id": self.entry_id,
                 "dataset_id": self.dataset_id, "schema": self.schema_description(),
+                "storage_layout": "current_snapshot",
                 "grain": self.adapter.grain, "date_column": None, "columns": self.schema.names,
                 "dates": dates, "rows": total,
                 "months": [{
@@ -1055,6 +1060,7 @@ class SnapshotWarehouse(DateWarehouse):
                 "coverage": "not_proven",
             }
             digest = write_json(staging / "manifest.json", manifest)
+            snapshot_checksum(staging, digest)
             sync_directory(staging / "months")
             sync_directory(staging)
             final = parent / snapshot_id
